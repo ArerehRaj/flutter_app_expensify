@@ -28,17 +28,15 @@ class AuthScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            child: Container(
-              height: deviceSize.height,
-              width: deviceSize.width,
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                // crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(child: AuthForm()),
-                ],
-              ),
+          Container(
+            height: deviceSize.height,
+            width: deviceSize.width,
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Flexible(child: AuthForm()),
+              ],
             ),
           ),
         ],
