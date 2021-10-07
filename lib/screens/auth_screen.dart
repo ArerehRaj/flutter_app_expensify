@@ -145,7 +145,7 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Card(
@@ -177,6 +177,87 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              if (_authMode == AuthMode.signUp)
+                Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40.0),
+                  ),
+                  child: Container(
+                    height: 50,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 25, vertical: 2),
+                    child: TextFormField(
+                      enabled: _authMode == AuthMode.signUp,
+                      decoration: const InputDecoration(
+                        icon: Icon(
+                          Icons.password,
+                        ),
+                        label: Text(
+                          'Confirm Password',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Lato',
+                          ),
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      obscureText: true,
+                      // controller: _passwordController,
+                      // onSaved: (value) => _authData['password'] = value!,
+                    ),
+                  ),
+                ),
+              const SizedBox(
+                height: 10,
+              ),
+              if (_isLoading)
+                CircularProgressIndicator()
+              else
+                Container(
+                  width: deviceSize.width * 0.9,
+                  height: 50,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+                  child: RaisedButton(
+                    onPressed: () {},
+                    child: Text(
+                      _authMode == AuthMode.login ? 'Login' : 'Sign Up',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Lato',
+                      ),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
+                    color: Theme.of(context).primaryColor,
+                    textColor: Theme.of(context).primaryTextTheme.button!.color,
+                  ),
+                ),
+              const SizedBox(
+                height: 10,
+              ),
+              FlatButton(
+                onPressed: () {},
+                child: Text(
+                  '${_authMode == AuthMode.login ? 'Sign Up' : 'Login'} Instead',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'Lato',
+                  ),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+                textColor: Theme.of(context).primaryColor,
+              )
             ],
           ),
         ),
