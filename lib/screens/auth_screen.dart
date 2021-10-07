@@ -36,37 +36,6 @@ class AuthScreen extends StatelessWidget {
                 // mainAxisAlignment: MainAxisAlignment.center,
                 // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 25,
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: const [
-                        Text(
-                          'Hello',
-                          style: TextStyle(
-                            fontSize: 60,
-                            fontFamily: 'Lato',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          'Sign in to your account!',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontFamily: 'Lato',
-                            fontWeight: FontWeight.normal,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
                   Flexible(child: AuthForm()),
                 ],
               ),
@@ -105,11 +74,75 @@ class _AuthFormState extends State<AuthForm> {
   // controller for managing the password
   final _passwordController = TextEditingController();
 
+  void _switchAuthMode() {
+    if (_authMode == AuthMode.login) {
+      setState(() {
+        _authMode = AuthMode.signUp;
+      });
+    } else {
+      setState(() {
+        _authMode = AuthMode.login;
+      });
+    }
+  }
+
+  // build method to return a sizedBox for variable height
+  Widget _createSizedBox(double heightValue) {
+    return SizedBox(
+      height: heightValue,
+    );
+  }
+
+  // build method to return Text widgets of variable message and font style
+  Widget _createText(String message, double fontSize, FontWeight fontWeight) {
+    return Text(
+      message,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontFamily: 'Lato',
+        fontWeight: fontWeight,
+      ),
+    );
+  }
+
+  // build method to return the input field widget
+  Widget _createInputField(TextFormField formField) {
+    return Card(
+      elevation: 10,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(40.0),
+      ),
+      child: Container(
+        height: 50,
+        margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 2),
+        child: formField,
+      ),
+    );
+  }
+
+  void _submitForm() {
+    if (!_formKey.currentState!.validate()) {
+      // Invalid
+      return;
+    }
+    _formKey.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+    if (_authMode == AuthMode.login) {
+      // Login code for firebase
+    } else {
+      // sign up code for firebase
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Container(
-      // height: 350,
       width: deviceSize.width * 0.9,
       padding: const EdgeInsets.all(10),
       child: Form(
@@ -117,103 +150,79 @@ class _AuthFormState extends State<AuthForm> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Card(
-                elevation: 10,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.0),
-                ),
-                child: Container(
-                  height: 50,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 2),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      icon: Icon(
-                        Icons.email,
-                      ),
-                      label: Text(
-                        'E-Mail',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'Lato',
-                        ),
-                      ),
-                      border: InputBorder.none,
+              _createSizedBox(50.0),
+              _createText('Hello', 60.0, FontWeight.bold),
+              _createSizedBox(20.0),
+              if (_authMode == AuthMode.login)
+                _createText('Login to your Account!', 25.0, FontWeight.normal)
+              else
+                _createText('Create a new account!', 25.0, FontWeight.normal),
+              _createSizedBox(20.0),
+              _createInputField(
+                TextFormField(
+                  decoration: const InputDecoration(
+                    icon: Icon(
+                      Icons.email,
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                    onSaved: (value) => _authData['email'] = value!,
+                    hintText: 'E-Mail',
+                    border: InputBorder.none,
                   ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    // Checking here if the email is valid or not
+                    if (value!.isEmpty || !value.contains('@')) {
+                      return 'Invalid Email';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _authData['email'] = value!,
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Card(
-                elevation: 10,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.0),
+              _createSizedBox(10.0),
+              _createInputField(
+                TextFormField(
+                  decoration: const InputDecoration(
+                    icon: Icon(
+                      Icons.password,
+                    ),
+                    hintText: 'Password',
+                    border: InputBorder.none,
+                  ),
+                  obscureText: true,
+                  controller: _passwordController,
+                  validator: (value) {
+                    // Checking for password if its proper or not
+                    if (value!.isEmpty || value.length < 5) {
+                      return 'Password is too short!';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _authData['password'] = value!,
                 ),
-                child: Container(
-                  height: 50,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 2),
-                  child: TextFormField(
+              ),
+              _createSizedBox(10.0),
+              if (_authMode == AuthMode.signUp)
+                _createInputField(
+                  TextFormField(
+                    enabled: _authMode == AuthMode.signUp,
                     decoration: const InputDecoration(
                       icon: Icon(
                         Icons.password,
                       ),
-                      label: Text(
-                        'Password',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'Lato',
-                        ),
-                      ),
+                      hintText: 'Confirm Password',
                       border: InputBorder.none,
                     ),
                     obscureText: true,
-                    controller: _passwordController,
-                    onSaved: (value) => _authData['password'] = value!,
+                    validator: _authMode == AuthMode.signUp
+                        ? (value) {
+                            if (value != _passwordController.text) {
+                              return 'Passwords do not match';
+                            }
+                          }
+                        : null,
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              if (_authMode == AuthMode.signUp)
-                Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40.0),
-                  ),
-                  child: Container(
-                    height: 50,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 25, vertical: 2),
-                    child: TextFormField(
-                      enabled: _authMode == AuthMode.signUp,
-                      decoration: const InputDecoration(
-                        icon: Icon(
-                          Icons.password,
-                        ),
-                        label: Text(
-                          'Confirm Password',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'Lato',
-                          ),
-                        ),
-                        border: InputBorder.none,
-                      ),
-                      obscureText: true,
-                      // controller: _passwordController,
-                      // onSaved: (value) => _authData['password'] = value!,
-                    ),
-                  ),
-                ),
-              const SizedBox(
-                height: 10,
-              ),
+              _createSizedBox(10.0),
               if (_isLoading)
                 CircularProgressIndicator()
               else
@@ -223,7 +232,7 @@ class _AuthFormState extends State<AuthForm> {
                   margin:
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
                   child: RaisedButton(
-                    onPressed: () {},
+                    onPressed: _submitForm,
                     child: Text(
                       _authMode == AuthMode.login ? 'Login' : 'Sign Up',
                       style: const TextStyle(
@@ -242,11 +251,9 @@ class _AuthFormState extends State<AuthForm> {
                     textColor: Theme.of(context).primaryTextTheme.button!.color,
                   ),
                 ),
-              const SizedBox(
-                height: 10,
-              ),
+              _createSizedBox(10.0),
               FlatButton(
-                onPressed: () {},
+                onPressed: _switchAuthMode,
                 child: Text(
                   '${_authMode == AuthMode.login ? 'Sign Up' : 'Login'} Instead',
                   style: const TextStyle(
