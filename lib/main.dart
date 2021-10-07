@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './screens/auth_screen.dart';
+import './screens/home_dashboard_screen.dart';
+import './providers/auth.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        accentColor: Colors.greenAccent,
-        fontFamily: 'Lato',
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => Auth(),
+        ),
+      ],
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          theme: ThemeData(
+            primarySwatch: Colors.green,
+            accentColor: Colors.greenAccent,
+            fontFamily: 'Lato',
+          ),
+          title: 'Expensify',
+          home:
+              auth.isAuthenticated ? HomeDashboardScreen() : const AuthScreen(),
+        ),
       ),
-      title: 'Expensify',
-      home: AuthScreen(),
     );
   }
 }

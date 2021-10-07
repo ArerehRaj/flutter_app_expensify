@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/auth.dart';
 
 enum AuthMode { signUp, login }
 
@@ -118,7 +121,27 @@ class _AuthFormState extends State<AuthForm> {
     );
   }
 
-  void _submitForm() {
+  // method to show the alert box in case of error coming up
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('An error occured'),
+        content: Text(message),
+        actions: [
+          FlatButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Okay'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Future function which is submitted to firebase for authentication
+  Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid
       return;
@@ -127,10 +150,23 @@ class _AuthFormState extends State<AuthForm> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.login) {
-      // Login code for firebase
-    } else {
-      // sign up code for firebase
+    try {
+      if (_authMode == AuthMode.login) {
+        // Login code for firebase
+        await Provider.of<Auth>(context, listen: false).signIn(
+          _authData['email'].toString(),
+          _authData['password'].toString(),
+        );
+      } else {
+        // sign up code for firebase
+        await Provider.of<Auth>(context, listen: false).signUp(
+          _authData['email'].toString(),
+          _authData['password'].toString(),
+        );
+      }
+    } catch (error) {
+      var errorMessage = 'Could not authenticate you! Please try again later.';
+      _showErrorDialog(errorMessage);
     }
     setState(() {
       _isLoading = false;
@@ -253,11 +289,12 @@ class _AuthFormState extends State<AuthForm> {
               FlatButton(
                 onPressed: _switchAuthMode,
                 child: Text(
-                  '${_authMode == AuthMode.login ? 'Sign Up' : 'Login'} Instead',
+                  '${_authMode == AuthMode.login ? 'Dont have an account?\nCreate a new account' : 'Already have an account?\nLogin'} ',
                   style: const TextStyle(
                     fontSize: 20,
                     fontFamily: 'Lato',
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
