@@ -1,3 +1,4 @@
+import 'package:expensify_app/models/http_exception.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -196,6 +197,20 @@ class _AuthFormState extends State<AuthForm> {
           _authData['password'].toString(),
         );
       }
+    } on HttpException catch (error) {
+      var errorMessage = 'Authentication Failed';
+      if (error.toString().toString().contains('EMAIL_EXISTS')) {
+        errorMessage = 'This email address is already taken!';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'Please enter a valid email address!';
+      } else if (error.toString().contains('WEAK_PASSWORD')) {
+        errorMessage = 'This password is too weak!';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'Could not find the user with this email address';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid password entered';
+      }
+      _showErrorDialog(errorMessage);
     } catch (error) {
       var errorMessage = 'Could not authenticate you! Please try again later.';
       _showErrorDialog(errorMessage);

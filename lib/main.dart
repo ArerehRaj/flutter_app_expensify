@@ -24,8 +24,17 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Lato',
           ),
           title: 'Expensify',
-          home:
-              auth.isAuthenticated ? HomeDashboardScreen() : const AuthScreen(),
+          home: auth.isAuthenticated
+              ? HomeDashboardScreen()
+              : FutureBuilder(
+                  builder: (ctx, authSnapShot) =>
+                      authSnapShot.connectionState == ConnectionState.waiting
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : const AuthScreen(),
+                  future: auth.tryAutoLogin(),
+                ),
         ),
       ),
     );
