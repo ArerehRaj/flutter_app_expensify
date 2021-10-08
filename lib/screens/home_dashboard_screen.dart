@@ -18,7 +18,30 @@ class HomeDashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: DashboardGrid(),
+      body: Container(
+          height: deviceSize.height,
+          width: deviceSize.width,
+          child: Column(
+            children: [
+              Container(
+                width: deviceSize.width,
+                height: deviceSize.height * 0.2,
+                child: const Center(
+                  child: Text(
+                    'Hello User',
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontFamily: 'Lato',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: DashboardGrid(),
+              ),
+            ],
+          )),
     );
   }
 }
