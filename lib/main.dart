@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './screens/auth_screen.dart';
-import './screens/home_dashboard_screen.dart';
 import './providers/auth.dart';
+import './screens/auth_screen.dart';
+import './screens/tab_bar_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           ),
           title: 'Expensify',
           home: auth.isAuthenticated
-              ? HomeDashboardScreen()
+              ? TabBarScreen()
               : FutureBuilder(
                   builder: (ctx, authSnapShot) =>
                       authSnapShot.connectionState == ConnectionState.waiting

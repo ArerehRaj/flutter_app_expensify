@@ -1,6 +1,6 @@
-import 'package:expensify_app/screens/auth_screen.dart';
-import 'package:expensify_app/screens/home_dashboard_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../screens/auth_screen.dart';
 
 class TabBarScreen extends StatefulWidget {
   @override
@@ -48,13 +48,11 @@ class _TabBarScreenState extends State<TabBarScreen> {
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
-            // HomeDashboardScreen(),
             AuthScreen(),
             AuthScreen(),
             AuthScreen(),
-            // HomeDashboardScreen(),
           ],
         ),
       ),
