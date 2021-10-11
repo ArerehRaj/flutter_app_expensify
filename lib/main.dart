@@ -19,14 +19,14 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, Transactions>(
-          create: (_) => Transactions('', '', []),
           update: (ctx, auth, previousTransactions) => Transactions(
             auth.token,
             auth.userID,
             previousTransactions == null
                 ? []
-                : previousTransactions.transactions,
+                : previousTransactions.getTransactions,
           ),
+          create: (_) => Transactions('', '', []),
         )
       ],
       child: Consumer<Auth>(

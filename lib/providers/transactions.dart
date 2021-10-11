@@ -15,20 +15,7 @@ class TransactionItem {
 }
 
 class Transactions with ChangeNotifier {
-  List<TransactionItem> _transactions = [
-    // TransactionItem(
-    //   id: '1',
-    //   title: 'Stonks',
-    //   amount: 450,
-    //   date: DateTime.now(),
-    // ),
-    // TransactionItem(
-    //   id: '2',
-    //   title: 'Internet',
-    //   amount: 400,
-    //   date: DateTime.now(),
-    // ),
-  ];
+  List<TransactionItem> _transactions = [];
 
   final String token;
   final String userId;
@@ -39,7 +26,8 @@ class Transactions with ChangeNotifier {
     this._transactions,
   );
 
-  List<TransactionItem> get transactions {
+  List<TransactionItem> get getTransactions {
+    print(_transactions);
     return [..._transactions];
   }
 
@@ -53,7 +41,7 @@ class Transactions with ChangeNotifier {
   }
 
   void fetchAndSetTransactions() {
-    print('Fetched Transactions');
+    print('IN FECT');
     notifyListeners();
   }
 }
