@@ -51,4 +51,9 @@ class Transactions with ChangeNotifier {
     _transactions.add(newTransaction);
     notifyListeners();
   }
+
+  void fetchAndSetTransactions() {
+    print('Fetched Transactions');
+    notifyListeners();
+  }
 }
