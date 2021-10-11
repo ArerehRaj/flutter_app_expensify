@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../screens/auth_screen.dart';
+import '../screens/daily_transactions.dart';
 
 class TabBarScreen extends StatefulWidget {
   @override
@@ -48,11 +49,11 @@ class _TabBarScreenState extends State<TabBarScreen> {
             ],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            AuthScreen(),
-            AuthScreen(),
-            AuthScreen(),
+            DailyTransactions(),
+            const AuthScreen(),
+            const AuthScreen(),
           ],
         ),
       ),

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './providers/auth.dart';
+import './providers/transactions.dart';
+
 import './screens/auth_screen.dart';
 import './screens/tab_bar_screen.dart';
+import './screens/daily_transactions.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,6 +18,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => Auth(),
         ),
+        ChangeNotifierProxyProvider<Auth, Transactions>(
+          create: (_) => Transactions('', '', []),
+          update: (ctx, auth, previousTransactions) => Transactions(
+            auth.token,
+            auth.userID,
+            previousTransactions == null
+                ? []
+                : previousTransactions.transactions,
+          ),
+        )
       ],
       child: Consumer<Auth>(
         builder: (ctx, auth, _) => MaterialApp(
@@ -35,6 +48,9 @@ class MyApp extends StatelessWidget {
                           : const AuthScreen(),
                   future: auth.tryAutoLogin(),
                 ),
+          routes: {
+            DailyTransactions.routeName: (ctx) => DailyTransactions(),
+          },
         ),
       ),
     );
