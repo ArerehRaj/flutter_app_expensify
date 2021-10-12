@@ -24,57 +24,75 @@ class _DailyTransactionsState extends State<DailyTransactions> {
     final transactionsData = Provider.of<Transactions>(context, listen: false);
     final deviceSize = MediaQuery.of(context).size;
 
-    return Container(
-      // child: transactionsData.getTransactions.isEmpty
-      height: deviceSize.height,
-      child: transactionsData.getTransactions.isNotEmpty
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'No transactions added yet!',
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    fontWeight: FontWeight.normal,
-                    fontSize: 45,
-                  ),
-                  textAlign: TextAlign.center,
+    return Column(
+      children: [
+        Container(
+          // child: transactionsData.getTransactions.isEmpty
+          height: deviceSize.height * 0.65,
+          child: transactionsData.getTransactions.isEmpty
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'No transactions added yet!',
+                      style: TextStyle(
+                        fontFamily: 'Lato',
+                        fontWeight: FontWeight.normal,
+                        fontSize: 40,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    Container(
+                      height: deviceSize.height * 0.2,
+                      child: Image.asset(
+                        'assets/images/emptyBox.png',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ],
+                )
+              :
+              // Container(
+              //     height: deviceSize.height * 0.7,
+              //     child: Column(
+              //       children: [
+              //         const Text('CHART'),
+              ListView.builder(
+                  itemBuilder: (ctx, index) {
+                    return ti_widget.TransactionItem(
+                      transaction: TransactionItem(
+                        id: '1',
+                        title: 'title',
+                        amount: 250,
+                        date: DateTime.now(),
+                      ), //transactionsData.getTransactions[index],
+                    );
+                  },
+                  itemCount: 10, //transactionsData.getTransactions.length,
                 ),
-                const SizedBox(
-                  height: 35,
-                ),
-                Container(
-                  height: deviceSize.height * 0.25,
-                  child: Image.asset(
-                    'assets/images/emptyBox.png',
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ],
-            )
-          :
-          // Container(
-          //     height: deviceSize.height * 0.7,
-          //     child: Column(
-          //       children: [
-          //         const Text('CHART'),
-          ListView.builder(
-              itemBuilder: (ctx, index) {
-                return ti_widget.TransactionItem(
-                  transaction: TransactionItem(
-                    id: '1',
-                    title: 'title',
-                    amount: 250,
-                    date: DateTime.now(),
-                  ), //transactionsData.getTransactions[index],
-                );
-              },
-              itemCount: 2, //transactionsData.getTransactions.length,
-            ),
-      //],
-      //),
-      //),
+          //],
+          //),
+          //),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        FloatingActionButton(
+          onPressed: () {
+            print('HEY');
+          },
+          child: const Icon(
+            Icons.add,
+          ),
+          elevation: 5,
+          // focusColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      ],
     );
   }
 }
