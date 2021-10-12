@@ -1,5 +1,7 @@
+import 'package:expensify_app/providers/transactions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 enum TransactionMode { daily, monthly }
 
@@ -28,6 +30,56 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
   //checking if the user has selected a date or not
   var _isLoading = false;
   var _selectedDate = null;
+
+  // function to show the date picker to user
+  // and once selected show the value of it in selected date
+  void _presentDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2021),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        _selectedDate = pickedDate;
+        _transactionData['date'] = pickedDate;
+      });
+    });
+  }
+
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) {
+      // invalid
+      return;
+    }
+
+    _formKey.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+
+    // code for saving on the firebase
+    try {
+      if (_transactionMode == TransactionMode.daily) {
+        await Provider.of<Transactions>(context, listen: false).addTransaction(
+          double.parse(_transactionData['amount'].toString()),
+          _transactionData['date'] as DateTime,
+          _transactionData['title'].toString(),
+        );
+      }
+    } catch (error) {
+      throw error;
+    }
+
+    // after complete
+    setState(() {
+      _isLoading = false;
+      Navigator.of(context).pop();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +110,10 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   keyboardType: TextInputType.text,
                   validator: (value) {
                     // Check here for validation
+                    if (value!.isEmpty) {
+                      return 'Please enter a Title!';
+                    }
+                    return null;
                   },
                   onSaved: (value) =>
                       _transactionData['title'] = value.toString(),
@@ -75,6 +131,10 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     // Check here for validation
+                    if (double.parse(value.toString()) <= 0.0) {
+                      return 'Please enter a valid amount!';
+                    }
+                    return null;
                   },
                   onSaved: (value) => _transactionData['amount'] =
                       double.parse(value.toString()),
@@ -94,7 +154,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                         ),
                       ),
                       FlatButton(
-                        onPressed: () {},
+                        onPressed: _presentDatePicker,
                         child: const Text(
                           'Select A Date',
                           style: TextStyle(
@@ -108,12 +168,16 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   ),
                 ),
                 // Button to submit the form for adding the transaction
-                RaisedButton(
-                  onPressed: () {},
-                  child: const Text('Add Transaction'),
-                  color: Theme.of(context).primaryColor,
-                  textColor: Colors.white,
-                ),
+                _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : RaisedButton(
+                        onPressed: _submitForm,
+                        child: const Text('Add Transaction'),
+                        color: Theme.of(context).primaryColor,
+                        textColor: Colors.white,
+                      ),
               ],
             ),
           ),

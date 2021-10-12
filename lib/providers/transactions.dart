@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class TransactionItem {
   final String id;
@@ -35,8 +37,30 @@ class Transactions with ChangeNotifier {
     return _transactions.firstWhere((transaction) => transaction.id == id);
   }
 
-  void addTransaction(TransactionItem newTransaction) {
-    _transactions.add(newTransaction);
+  Future<void> addTransaction(
+      double amount, DateTime date, String title) async {
+    final timeStamp = DateTime.now();
+    final url = Uri.parse(
+        'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId.json?auth=$token');
+
+    final response = await http.post(
+      url,
+      body: json.encode(
+        {
+          'amount': amount,
+          'dateTime': date.toIso8601String(),
+          'title': title,
+        },
+      ),
+    );
+    _transactions.add(
+      TransactionItem(
+        id: json.decode(response.body)['name'],
+        title: title,
+        amount: amount,
+        date: date,
+      ),
+    );
     notifyListeners();
   }
 

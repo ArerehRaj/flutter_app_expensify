@@ -36,7 +36,7 @@ class _DailyTransactionsState extends State<DailyTransactions> {
 
   @override
   Widget build(BuildContext context) {
-    final transactionsData = Provider.of<Transactions>(context, listen: false);
+    final transactionsData = Provider.of<Transactions>(context);
     final deviceSize = MediaQuery.of(context).size;
 
     return Column(
@@ -45,7 +45,7 @@ class _DailyTransactionsState extends State<DailyTransactions> {
         Container(
           // child: transactionsData.getTransactions.isEmpty
           height: deviceSize.height * 0.6,
-          child: transactionsData.getTransactions.isNotEmpty
+          child: transactionsData.getTransactions.isEmpty
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,15 +74,16 @@ class _DailyTransactionsState extends State<DailyTransactions> {
               : ListView.builder(
                   itemBuilder: (ctx, index) {
                     return ti_widget.TransactionItem(
-                      transaction: TransactionItem(
-                        id: '1',
-                        title: 'title',
-                        amount: 250,
-                        date: DateTime.now(),
-                      ), //transactionsData.getTransactions[index],
+                      transaction: transactionsData.getTransactions[index],
+                      // TransactionItem(
+                      //   id: '1',
+                      //   title: 'title',
+                      //   amount: 250,
+                      //   date: DateTime.now(),
+                      // ), //transactionsData.getTransactions[index],
                     );
                   },
-                  itemCount: 10, //transactionsData.getTransactions.length,
+                  itemCount: transactionsData.getTransactions.length,
                 ),
         ),
         const SizedBox(
