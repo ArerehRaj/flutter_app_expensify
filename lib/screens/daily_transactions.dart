@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/transactions.dart';
 import '../widgets/transaction_item.dart' as ti_widget;
+import '../widgets/new_transaction_form.dart';
 
 class DailyTransactions extends StatefulWidget {
   static const routeName = '/daily-transaction';
@@ -19,6 +20,20 @@ class _DailyTransactionsState extends State<DailyTransactions> {
   //   super.initState();
   // }
 
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        builder: (bCtx) {
+          return GestureDetector(
+            onTap: () {},
+            child: const NewTransactionForm(
+              mode: TransactionMode.daily,
+            ),
+            behavior: HitTestBehavior.opaque,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final transactionsData = Provider.of<Transactions>(context, listen: false);
@@ -26,10 +41,11 @@ class _DailyTransactionsState extends State<DailyTransactions> {
 
     return Column(
       children: [
+        if (transactionsData.getTransactions.isNotEmpty) const Text('CHART'),
         Container(
           // child: transactionsData.getTransactions.isEmpty
-          height: deviceSize.height * 0.65,
-          child: transactionsData.getTransactions.isEmpty
+          height: deviceSize.height * 0.6,
+          child: transactionsData.getTransactions.isNotEmpty
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,15 +55,15 @@ class _DailyTransactionsState extends State<DailyTransactions> {
                       style: TextStyle(
                         fontFamily: 'Lato',
                         fontWeight: FontWeight.normal,
-                        fontSize: 40,
+                        fontSize: 35,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(
-                      height: 25,
+                      height: 10,
                     ),
                     Container(
-                      height: deviceSize.height * 0.2,
+                      height: deviceSize.height * 0.18,
                       child: Image.asset(
                         'assets/images/emptyBox.png',
                         fit: BoxFit.fill,
@@ -55,13 +71,7 @@ class _DailyTransactionsState extends State<DailyTransactions> {
                     ),
                   ],
                 )
-              :
-              // Container(
-              //     height: deviceSize.height * 0.7,
-              //     child: Column(
-              //       children: [
-              //         const Text('CHART'),
-              ListView.builder(
+              : ListView.builder(
                   itemBuilder: (ctx, index) {
                     return ti_widget.TransactionItem(
                       transaction: TransactionItem(
@@ -74,17 +84,12 @@ class _DailyTransactionsState extends State<DailyTransactions> {
                   },
                   itemCount: 10, //transactionsData.getTransactions.length,
                 ),
-          //],
-          //),
-          //),
         ),
         const SizedBox(
           height: 10,
         ),
         FloatingActionButton(
-          onPressed: () {
-            print('HEY');
-          },
+          onPressed: () => _startAddNewTransaction(context),
           child: const Icon(
             Icons.add,
           ),
