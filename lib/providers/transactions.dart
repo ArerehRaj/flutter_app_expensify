@@ -29,7 +29,6 @@ class Transactions with ChangeNotifier {
   );
 
   List<TransactionItem> get getTransactions {
-    print(_transactions);
     return [..._transactions];
   }
 
@@ -39,7 +38,7 @@ class Transactions with ChangeNotifier {
 
   Future<void> addTransaction(
       double amount, DateTime date, String title) async {
-    final timeStamp = DateTime.now();
+    // final timeStamp = DateTime.now();
     final url = Uri.parse(
         'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId.json?auth=$token');
 
@@ -64,8 +63,28 @@ class Transactions with ChangeNotifier {
     notifyListeners();
   }
 
-  void fetchAndSetTransactions() {
-    print('IN FECT');
+  Future<void> fetchAndSetTransactions() async {
+    final url = Uri.parse(
+        'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId.json?auth=$token');
+    final response = await http.get(url);
+    final List<TransactionItem> loadedTransactions = [];
+    final extractedTransactionData =
+        json.decode(response.body) as Map<String, dynamic>;
+
+    if (extractedTransactionData == null) {
+      return;
+    }
+    extractedTransactionData.forEach((transactionId, transactionData) {
+      loadedTransactions.add(
+        TransactionItem(
+          id: transactionId,
+          title: transactionData['title'],
+          amount: transactionData['amount'],
+          date: DateTime.parse(transactionData['dateTime']),
+        ),
+      );
+    });
+    _transactions = loadedTransactions;
     notifyListeners();
   }
 }

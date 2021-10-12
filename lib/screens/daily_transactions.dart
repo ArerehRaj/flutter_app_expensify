@@ -14,11 +14,19 @@ class DailyTransactions extends StatefulWidget {
 }
 
 class _DailyTransactionsState extends State<DailyTransactions> {
-  // @override
-  // void initState() {
-  //   Provider.of<Transactions>(context, listen: false).fetchAndSetTransactions();
-  //   super.initState();
-  // }
+  var _isLoading = false;
+  @override
+  void initState() {
+    _isLoading = true;
+    Provider.of<Transactions>(context, listen: false)
+        .fetchAndSetTransactions()
+        .then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
+  }
 
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
@@ -39,66 +47,66 @@ class _DailyTransactionsState extends State<DailyTransactions> {
     final transactionsData = Provider.of<Transactions>(context);
     final deviceSize = MediaQuery.of(context).size;
 
-    return Column(
-      children: [
-        if (transactionsData.getTransactions.isNotEmpty) const Text('CHART'),
-        Container(
-          // child: transactionsData.getTransactions.isEmpty
-          height: deviceSize.height * 0.6,
-          child: transactionsData.getTransactions.isEmpty
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'No transactions added yet!',
-                      style: TextStyle(
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.normal,
-                        fontSize: 35,
+    return _isLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Column(
+            children: [
+              if (transactionsData.getTransactions.isNotEmpty)
+                const Text('CHART'),
+              Container(
+                // child: transactionsData.getTransactions.isEmpty
+                height: deviceSize.height * 0.6,
+                child: transactionsData.getTransactions.isEmpty
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'No transactions added yet!',
+                            style: TextStyle(
+                              fontFamily: 'Lato',
+                              fontWeight: FontWeight.normal,
+                              fontSize: 35,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            height: deviceSize.height * 0.18,
+                            child: Image.asset(
+                              'assets/images/emptyBox.png',
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ],
+                      )
+                    : ListView.builder(
+                        itemBuilder: (ctx, index) {
+                          return ti_widget.TransactionItem(
+                            transaction:
+                                transactionsData.getTransactions[index],
+                          );
+                        },
+                        itemCount: transactionsData.getTransactions.length,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: deviceSize.height * 0.18,
-                      child: Image.asset(
-                        'assets/images/emptyBox.png',
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ],
-                )
-              : ListView.builder(
-                  itemBuilder: (ctx, index) {
-                    return ti_widget.TransactionItem(
-                      transaction: transactionsData.getTransactions[index],
-                      // TransactionItem(
-                      //   id: '1',
-                      //   title: 'title',
-                      //   amount: 250,
-                      //   date: DateTime.now(),
-                      // ), //transactionsData.getTransactions[index],
-                    );
-                  },
-                  itemCount: transactionsData.getTransactions.length,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              FloatingActionButton(
+                onPressed: () => _startAddNewTransaction(context),
+                child: const Icon(
+                  Icons.add,
                 ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        FloatingActionButton(
-          onPressed: () => _startAddNewTransaction(context),
-          child: const Icon(
-            Icons.add,
-          ),
-          elevation: 5,
-          // focusColor: Theme.of(context).primaryColor,
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-      ],
-    );
+                elevation: 5,
+                // focusColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            ],
+          );
   }
 }

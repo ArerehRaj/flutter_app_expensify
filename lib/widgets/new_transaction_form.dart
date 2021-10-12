@@ -74,10 +74,10 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
       throw error;
     }
 
-    // after complete
+    // after complete response
     setState(() {
-      _isLoading = false;
       Navigator.of(context).pop();
+      _isLoading = false;
     });
   }
 
