@@ -12,14 +12,20 @@ class NewTransactionForm extends StatefulWidget {
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
   final GlobalKey<FormState> _formKey = GlobalKey();
+
+  // Seeting the default mode to daily transactions
   TransactionMode _transactionMode = TransactionMode.daily;
 
+  // A map of String Objects to store the
+  //transaction Data while filling the form
   Map<String, Object> _transactionData = {
     'title': '',
     'amount': 0.0,
     'date': DateTime.now(),
   };
 
+  // Vars for showing loading and
+  //checking if the user has selected a date or not
   var _isLoading = false;
   var _selectedDate = null;
 
@@ -40,6 +46,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                // Text Input for Title
                 TextFormField(
                   decoration: const InputDecoration(
                     icon: Icon(
@@ -54,7 +61,9 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   },
                   onSaved: (value) =>
                       _transactionData['title'] = value.toString(),
+                  // Saving the title value in the transactionData map
                 ),
+                // Text Input for Amount
                 TextFormField(
                   decoration: const InputDecoration(
                     icon: Icon(
@@ -69,7 +78,10 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   },
                   onSaved: (value) => _transactionData['amount'] =
                       double.parse(value.toString()),
+                  // Saving the amount value in the transactionData map
                 ),
+                // Container to show the selected Date if selected and
+                //the option to select the date
                 Container(
                   height: 70,
                   child: Row(
@@ -95,6 +107,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                     ],
                   ),
                 ),
+                // Button to submit the form for adding the transaction
                 RaisedButton(
                   onPressed: () {},
                   child: const Text('Add Transaction'),
