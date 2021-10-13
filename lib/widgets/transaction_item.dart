@@ -36,7 +36,7 @@ class TransactionItem extends StatelessWidget {
         try {
           Provider.of<ti.Transactions>(context, listen: false)
               .deleteTransaction(transaction.id);
-        } catch (error) {
+        } on HttpException catch (error) {
           scaffold.showSnackBar(
             const SnackBar(
               content: Text(

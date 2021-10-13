@@ -59,30 +59,34 @@ class _DailyTransactionsState extends State<DailyTransactions> {
                 // child: transactionsData.getTransactions.isEmpty
                 height: deviceSize.height * 0.6,
                 child: transactionsData.getTransactions.isEmpty
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'No transactions added yet!',
-                            style: TextStyle(
-                              fontFamily: 'Lato',
-                              fontWeight: FontWeight.normal,
-                              fontSize: 35,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            height: deviceSize.height * 0.18,
-                            child: Image.asset(
-                              'assets/images/emptyBox.png',
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ],
+                    ? LayoutBuilder(
+                        builder: (ctx, constraints) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'No transactions added yet!',
+                                style: TextStyle(
+                                  fontFamily: 'Lato',
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 40,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Container(
+                                height: constraints.maxHeight * 0.3,
+                                child: Image.asset(
+                                  'assets/images/emptyBox.png',
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       )
                     : ListView.builder(
                         itemBuilder: (ctx, index) {

@@ -70,12 +70,9 @@ class Transactions with ChangeNotifier {
         'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId.json?auth=$token');
     final response = await http.get(url);
     final List<TransactionItem> loadedTransactions = [];
-    print(response.body);
     if (response.body == 'null') {
-      print('in if');
       return;
     }
-    print('after if');
     final extractedTransactionData =
         json.decode(response.body) as Map<String, dynamic>;
 
