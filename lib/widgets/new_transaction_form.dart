@@ -71,7 +71,52 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
         );
       }
     } catch (error) {
-      throw error;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Text('An error occured'),
+            ],
+          ),
+          content: Text(
+            error.toString(),
+            textAlign: TextAlign.center,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          actions: [
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.2),
+              child: RaisedButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      'Okay',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Lato',
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                color: Theme.of(context).errorColor,
+                textColor: Theme.of(context).primaryTextTheme.button!.color,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     // after complete response
