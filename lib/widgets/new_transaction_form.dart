@@ -71,6 +71,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
         );
       }
     } catch (error) {
+      final deviceSize = MediaQuery.of(context).size;
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
