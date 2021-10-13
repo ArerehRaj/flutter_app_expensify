@@ -1,5 +1,7 @@
+import 'package:expensify_app/models/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../providers/transactions.dart' as ti;
 
 class TransactionItem extends StatelessWidget {
@@ -12,6 +14,7 @@ class TransactionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
+    final scaffold = ScaffoldMessenger.of(context);
     return Dismissible(
       key: ValueKey(transaction.id),
       background: Container(
@@ -30,10 +33,44 @@ class TransactionItem extends StatelessWidget {
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
-        print('Removing');
+        try {
+          Provider.of<ti.Transactions>(context, listen: false)
+              .deleteTransaction(transaction.id);
+        } catch (error) {
+          scaffold.showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Deleting Failed',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
       },
       confirmDismiss: (direction) {
-        return Future.value(true);
+        return showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text(
+              'Are you sure?',
+            ),
+            content: const Text('Do you want to remove the transaction?'),
+            actions: [
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop(true);
+                },
+                child: const Text('Yes'),
+              ),
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop(false);
+                },
+                child: const Text('No'),
+              ),
+            ],
+          ),
+        );
       },
       child: Card(
         elevation: 5,

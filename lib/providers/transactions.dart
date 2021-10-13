@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../models/http_exception.dart';
+
 class TransactionItem {
   final String id;
   final String title;
@@ -68,6 +70,12 @@ class Transactions with ChangeNotifier {
         'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId.json?auth=$token');
     final response = await http.get(url);
     final List<TransactionItem> loadedTransactions = [];
+    print(response.body);
+    if (response.body == 'null') {
+      print('in if');
+      return;
+    }
+    print('after if');
     final extractedTransactionData =
         json.decode(response.body) as Map<String, dynamic>;
 
@@ -86,5 +94,23 @@ class Transactions with ChangeNotifier {
     });
     _transactions = loadedTransactions;
     notifyListeners();
+  }
+
+  Future<void> deleteTransaction(String id) async {
+    final existingTransactionIndex =
+        _transactions.indexWhere((trx) => trx.id == id);
+    var existingTransaction = _transactions[existingTransactionIndex];
+    final url = Uri.parse(
+        'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId/$id.json?auth=$token');
+    _transactions.removeAt(existingTransactionIndex);
+    notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _transactions.insert(existingTransactionIndex, existingTransaction);
+      notifyListeners();
+
+      // throw exception here
+      throw HttpException('An error occured while Deleting!');
+    }
   }
 }
