@@ -1,3 +1,4 @@
+import 'package:expensify_app/widgets/chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,61 +55,66 @@ class _DailyTransactionsState extends State<DailyTransactions> {
         : Column(
             children: [
               if (transactionsData.getTransactions.isNotEmpty)
-                const Text('CHART'),
+                Container(
+                    height: deviceSize.height * 0.25,
+                    child: Chart(transactionsData.getTransactions)),
               Container(
                 // child: transactionsData.getTransactions.isEmpty
-                height: deviceSize.height * 0.6,
+                // height: deviceSize.height * 0.75,
                 child: transactionsData.getTransactions.isEmpty
-                    ? LayoutBuilder(
-                        builder: (ctx, constraints) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'No transactions added yet!',
-                                style: TextStyle(
-                                  fontFamily: 'Lato',
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 40,
+                    ? Expanded(
+                        child: LayoutBuilder(
+                          builder: (ctx, constraints) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'No transactions added yet!',
+                                  style: TextStyle(
+                                    fontFamily: 'Lato',
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 40,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Container(
-                                height: constraints.maxHeight * 0.3,
-                                child: Image.asset(
-                                  'assets/images/emptyBox.png',
-                                  fit: BoxFit.fill,
+                                const SizedBox(
+                                  height: 10,
                                 ),
-                              ),
-                            ],
-                          );
-                        },
+                                Container(
+                                  height: constraints.maxHeight * 0.3,
+                                  child: Image.asset(
+                                    'assets/images/emptyBox.png',
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       )
-                    : ListView.builder(
-                        itemBuilder: (ctx, index) {
-                          return ti_widget.TransactionItem(
-                            transaction:
-                                transactionsData.getTransactions[index],
-                          );
-                        },
-                        itemCount: transactionsData.getTransactions.length,
+                    : Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (ctx, index) {
+                            return ti_widget.TransactionItem(
+                              transaction:
+                                  transactionsData.getTransactions[index],
+                            );
+                          },
+                          itemCount: transactionsData.getTransactions.length,
+                        ),
                       ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              FloatingActionButton(
-                onPressed: () => _startAddNewTransaction(context),
-                child: const Icon(
-                  Icons.add,
+              Padding(
+                padding: EdgeInsets.all(30),
+                child: FloatingActionButton(
+                  onPressed: () => _startAddNewTransaction(context),
+                  child: const Icon(
+                    Icons.add,
+                  ),
+                  elevation: 5,
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
-                elevation: 5,
-                // focusColor: Theme.of(context).primaryColor,
-                backgroundColor: Theme.of(context).primaryColor,
               ),
             ],
           );
