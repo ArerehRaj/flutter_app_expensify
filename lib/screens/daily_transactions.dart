@@ -15,12 +15,18 @@ class DailyTransactions extends StatefulWidget {
 }
 
 class _DailyTransactionsState extends State<DailyTransactions> {
+  // setting the loading var to false
   var _isLoading = false;
+
+  // init method which will run first while rendering the UI
   @override
   void initState() {
+    // set the loading to true and will show the loading screen
     _isLoading = true;
-    Provider.of<Transactions>(context, listen: false)
-        .fetchAndSetTransactions()
+
+    // calling the function to set the transaction data from firebase
+    Provider.of<Transactions>(context, listen: false).fetchAndSetTransactions()
+        // once the data is fetched then set the loading to false
         .then((_) {
       setState(() {
         _isLoading = false;
@@ -29,12 +35,17 @@ class _DailyTransactionsState extends State<DailyTransactions> {
     super.initState();
   }
 
+  // function to show the add new transaction form
   void _startAddNewTransaction(BuildContext ctx) {
+    // modal bottom sheet slides up
     showModalBottomSheet(
         context: ctx,
         builder: (bCtx) {
+          // setting a gesture dectector so that in case
+          // of a tap on form the sheet wont slide down
           return GestureDetector(
             onTap: () {},
+            // the sheet will show the new transaction form widget
             child: const NewTransactionForm(
               mode: TransactionMode.daily,
             ),
@@ -45,78 +56,92 @@ class _DailyTransactionsState extends State<DailyTransactions> {
 
   @override
   Widget build(BuildContext context) {
+    // getting the transaction data from our provider
     final transactionsData = Provider.of<Transactions>(context);
+
+    // getting the device size
     final deviceSize = MediaQuery.of(context).size;
 
-    return _isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : Column(
-            children: [
-              if (transactionsData.getTransactions.isNotEmpty)
-                Container(
-                    height: deviceSize.height * 0.25,
-                    child: Chart(transactionsData.getTransactions)),
-              Container(
-                // child: transactionsData.getTransactions.isEmpty
-                // height: deviceSize.height * 0.75,
-                child: transactionsData.getTransactions.isEmpty
-                    ? Expanded(
-                        child: LayoutBuilder(
-                          builder: (ctx, constraints) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  'No transactions added yet!',
-                                  style: TextStyle(
-                                    fontFamily: 'Lato',
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 40,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  height: constraints.maxHeight * 0.3,
-                                  child: Image.asset(
-                                    'assets/images/emptyBox.png',
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      )
-                    : Expanded(
-                        child: ListView.builder(
-                          itemBuilder: (ctx, index) {
-                            return ti_widget.TransactionItem(
-                              transaction:
-                                  transactionsData.getTransactions[index],
-                            );
-                          },
-                          itemCount: transactionsData.getTransactions.length,
-                        ),
-                      ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(30),
-                child: FloatingActionButton(
-                  onPressed: () => _startAddNewTransaction(context),
-                  child: const Icon(
-                    Icons.add,
+    return
+        // if loading is true then show the loading screen else the transactions
+        _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  // if there are transactions for the user then show the chart for that transactions
+                  if (transactionsData.getTransactions.isNotEmpty)
+                    Container(
+                        height: deviceSize.height * 0.25,
+                        child: Chart(transactionsData.getTransactions)),
+                  Container(
+                    // child: transactionsData.getTransactions.isEmpty
+                    // height: deviceSize.height * 0.75,
+
+                    // if there are no transactions for the user
+                    // then show the message to the user
+                    child: transactionsData.getTransactions.isEmpty
+                        ? Expanded(
+                            child: LayoutBuilder(
+                              builder: (ctx, constraints) {
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      'No transactions added yet!',
+                                      style: TextStyle(
+                                        fontFamily: 'Lato',
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 45,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(
+                                      height: 30,
+                                    ),
+                                    Container(
+                                      height: constraints.maxHeight * 0.3,
+                                      child: Image.asset(
+                                        'assets/images/emptyBox.png',
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          )
+                        :
+                        // if there are transactions then create transaction
+                        // item widget for each transaction obejct
+                        Expanded(
+                            child: ListView.builder(
+                              itemBuilder: (ctx, index) {
+                                return ti_widget.TransactionItem(
+                                  transaction:
+                                      transactionsData.getTransactions[index],
+                                );
+                              },
+                              itemCount:
+                                  transactionsData.getTransactions.length,
+                            ),
+                          ),
                   ),
-                  elevation: 5,
-                  backgroundColor: Theme.of(context).primaryColor,
-                ),
-              ),
-            ],
-          );
+                  // setting up the add button
+                  Padding(
+                    padding: EdgeInsets.all(30),
+                    child: FloatingActionButton(
+                      onPressed: () => _startAddNewTransaction(context),
+                      child: const Icon(
+                        Icons.add,
+                      ),
+                      elevation: 5,
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
+              );
   }
 }

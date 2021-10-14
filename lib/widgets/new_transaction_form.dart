@@ -3,16 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+// setting a enum for daily or monthly transactions
 enum TransactionMode { daily, monthly }
 
 class NewTransactionForm extends StatefulWidget {
   const NewTransactionForm({Key? key, required this.mode}) : super(key: key);
   final TransactionMode mode;
+
+  // accepting the transaction mode from constructor
   @override
   _NewTransactionFormState createState() => _NewTransactionFormState();
 }
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
+  // creating a global key for the form
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   // Seeting the default mode to daily transactions
@@ -50,12 +54,17 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
     });
   }
 
+  // async function to submit the form to firebase
+  // with all the valid input data
   Future<void> _submitForm() async {
+    // if form validation fails then return
     if (!_formKey.currentState!.validate()) {
       // invalid
       return;
     }
 
+    // saving the state of the form and
+    // showing the loading screen
     _formKey.currentState!.save();
     setState(() {
       _isLoading = true;
@@ -63,7 +72,9 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
 
     // code for saving on the firebase
     try {
+      // checking if the transaction mode is daily
       if (_transactionMode == TransactionMode.daily) {
+        // provider method to add the transaction of the user in UI and firebase
         await Provider.of<Transactions>(context, listen: false).addTransaction(
           double.parse(_transactionData['amount'].toString()),
           _transactionData['date'] as DateTime,
@@ -71,6 +82,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
         );
       }
     } catch (error) {
+      // if error occurs then show the error message box
       final deviceSize = MediaQuery.of(context).size;
       showDialog(
         context: context,

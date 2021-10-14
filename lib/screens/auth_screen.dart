@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth.dart';
 
+// set enum for checking sign up a=or sign in mode
 enum AuthMode { signUp, login }
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({Key? key}) : super(key: key);
 
+  // setting the route name for auth screen here
   static const routeName = '/auth';
 
   @override
@@ -76,6 +78,7 @@ class _AuthFormState extends State<AuthForm> {
   // controller for managing the password
   final _passwordController = TextEditingController();
 
+  // function to switch the auth UI from sign in to sign up and vice versa
   void _switchAuthMode() {
     if (_authMode == AuthMode.login) {
       setState(() {
@@ -180,6 +183,8 @@ class _AuthFormState extends State<AuthForm> {
       return;
     }
     _formKey.currentState!.save();
+
+    // setting loading to true
     setState(() {
       _isLoading = true;
     });
@@ -197,7 +202,8 @@ class _AuthFormState extends State<AuthForm> {
           _authData['password'].toString(),
         );
       }
-    } on HttpException catch (error) {
+    } // checking if user type exception has occured or not
+    on HttpException catch (error) {
       var errorMessage = 'Authentication Failed';
       if (error.toString().toString().contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already taken!';
@@ -215,6 +221,8 @@ class _AuthFormState extends State<AuthForm> {
       var errorMessage = 'Could not authenticate you! Please try again later.';
       _showErrorDialog(errorMessage);
     }
+
+    // setting loading to false
     setState(() {
       _isLoading = false;
     });
@@ -226,6 +234,7 @@ class _AuthFormState extends State<AuthForm> {
     return Container(
       width: deviceSize.width * 0.9,
       padding: const EdgeInsets.all(10),
+      // setting up the form as the child
       child: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -304,6 +313,8 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                 ),
               _createSizedBox(10.0),
+              // in case of user clicking submit button
+              // show the loading screen
               if (_isLoading)
                 CircularProgressIndicator()
               else

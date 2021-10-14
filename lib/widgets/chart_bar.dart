@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+// chart bar class to show single day's spent fraction in a week
 class ChartBar extends StatelessWidget {
   final String label;
   final double spendAmount;
   final double spendAmountPercentage;
 
+  // constructor
   ChartBar({
     required this.label,
     required this.spendAmount,
@@ -17,6 +19,7 @@ class ChartBar extends StatelessWidget {
       builder: (ctx, constraints) {
         return Column(
           children: [
+            // showing the amount for that day in the week
             Container(
               height: constraints.maxHeight * 0.15,
               child: FittedBox(
@@ -26,11 +29,14 @@ class ChartBar extends StatelessWidget {
             SizedBox(
               height: constraints.maxHeight * 0.05,
             ),
+            // here we are setting up the bar for that day's spent amount
             Container(
               height: constraints.maxHeight * 0.6,
               width: 10,
+              // stack widget to stack the bars
               child: Stack(
                 children: [
+                  // container used to show the grey portion
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -41,8 +47,8 @@ class ChartBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  // fraction box used to show the green portion i.e. spent amount
                   FractionallySizedBox(
-                    alignment: AlignmentDirectional(0, 10),
                     heightFactor: spendAmountPercentage,
                     child: Container(
                       decoration: BoxDecoration(
@@ -57,6 +63,7 @@ class ChartBar extends StatelessWidget {
             SizedBox(
               height: constraints.maxHeight * 0.05,
             ),
+            // container to show the short form of that day
             Container(
               height: constraints.maxHeight * 0.15,
               child: FittedBox(

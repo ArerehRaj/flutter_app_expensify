@@ -11,6 +11,7 @@ class TabBarScreen extends StatefulWidget {
 class _TabBarScreenState extends State<TabBarScreen> {
   @override
   Widget build(BuildContext context) {
+    // creating a default tab bar of length 3 with intial index as 0
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
@@ -26,6 +27,7 @@ class _TabBarScreenState extends State<TabBarScreen> {
               )
             ],
           ),
+          // setting the titles for each tab
           bottom: const TabBar(
             tabs: [
               Tab(
@@ -49,6 +51,7 @@ class _TabBarScreenState extends State<TabBarScreen> {
             ],
           ),
         ),
+        // setting the screens to show based on selected tab
         body: TabBarView(
           children: [
             DailyTransactions(),
