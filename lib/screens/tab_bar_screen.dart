@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/auth.dart';
 import '../screens/auth_screen.dart';
 import '../screens/daily_transactions.dart';
 
@@ -50,6 +52,28 @@ class _TabBarScreenState extends State<TabBarScreen> {
               ),
             ],
           ),
+          actions: [
+            // this add 3 dot icon at the top
+            PopupMenuButton(
+              // on selecting the logout option this code gets
+              // executed and the user gets logout
+              onSelected: (result) {
+                if (result == 0) {
+                  Navigator.of(context).pushReplacementNamed('/');
+                  Provider.of<Auth>(context, listen: false).logout();
+                }
+              },
+              itemBuilder: (_) => [
+                // option 1 i.e. logout
+                const PopupMenuItem(
+                  child: Text('Logout'),
+                  value: 0, // setting the value to 0
+                ),
+              ],
+              // icon for verticle 3 dots
+              icon: const Icon(Icons.more_vert),
+            ),
+          ],
         ),
         // setting the screens to show based on selected tab
         body: TabBarView(
