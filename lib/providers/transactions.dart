@@ -57,42 +57,66 @@ class Transactions with ChangeNotifier {
 
   // async function to add a new transaction over firebase
   Future<void> addTransaction(
-      double amount, DateTime date, String title) async {
+      double amount, DateTime date, String title, String identifier) async {
     // url to save the transaction for the user
     final url = Uri.parse(
-        'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId.json?auth=$token');
+        'https://expensify-8324b-default-rtdb.firebaseio.com/$identifier/$userId.json?auth=$token');
 
     // post request to send over the url to firebase
-    final response = await http.post(
-      url,
-      // sending json encoded data
-      body: json.encode(
-        {
-          'amount': amount,
-          'dateTime': date.toIso8601String(),
-          'title': title,
-        },
-      ),
-    );
-    // adding the transaction in transaction
-    //list to render over the user's UI
-    _dailyTransactions.add(
-      TransactionItem(
-        id: json.decode(response.body)['name'],
-        title: title,
-        amount: amount,
-        date: date,
-      ),
-    );
+    var response;
+    if (identifier == 'daily_transactions') {
+      response = await http.post(
+        url,
+        // sending json encoded data
+        body: json.encode(
+          {
+            'amount': amount,
+            'dateTime': date.toIso8601String(),
+            'title': title,
+          },
+        ),
+      );
+
+      // adding the transaction in transaction
+      //list to render over the user's UI
+      _dailyTransactions.add(
+        TransactionItem(
+          id: json.decode(response.body)['name'],
+          title: title,
+          amount: amount,
+          date: date,
+        ),
+      );
+    } else if (identifier == 'monthly_transactions') {
+      response = await http.post(
+        url,
+        body: json.encode(
+          {
+            'amount': amount,
+            'title': title,
+            'dateTime': date.toIso8601String(),
+            'month': date.month,
+          },
+        ),
+      );
+      _monthlyTransactions.add(
+        TransactionItem(
+          id: json.decode(response.body)['name'],
+          title: title,
+          amount: amount,
+          date: date,
+        ),
+      );
+    }
     notifyListeners();
   }
 
   // async function to add fetch and set the transaction
   // data from the firebase in user's UI
-  Future<void> fetchAndSetTransactions() async {
+  Future<void> fetchAndSetTransactions(String identifier) async {
     // url to fetch the data from firebase
     final url = Uri.parse(
-        'https://expensify-8324b-default-rtdb.firebaseio.com/daily_transactions/$userId.json?auth=$token');
+        'https://expensify-8324b-default-rtdb.firebaseio.com/$identifier/$userId.json?auth=$token');
 
     // sending get request to firebase
     final response = await http.get(url);
@@ -132,7 +156,11 @@ class Transactions with ChangeNotifier {
 
     // setting the loaded transactions to our class
     // transaction list which is used over the app
-    _dailyTransactions = loadedTransactions;
+    if (identifier == 'daily_transactions') {
+      _dailyTransactions = loadedTransactions;
+    } else {
+      _monthlyTransactions = loadedTransactions;
+    }
     notifyListeners();
   }
 

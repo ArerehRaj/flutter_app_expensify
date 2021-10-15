@@ -26,7 +26,8 @@ class _DailyTransactionsState extends State<DailyTransactions> {
     _isLoading = true;
 
     // calling the function to set the transaction data from firebase
-    Provider.of<Transactions>(context, listen: false).fetchAndSetTransactions()
+    Provider.of<Transactions>(context, listen: false)
+        .fetchAndSetTransactions('daily_transactions')
         // once the data is fetched then set the loading to false
         .then((_) {
       setState(() {

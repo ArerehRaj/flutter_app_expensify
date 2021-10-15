@@ -20,7 +20,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   // Seeting the default mode to daily transactions
-  TransactionMode _transactionMode = TransactionMode.daily;
+  // final TransactionMode _transactionMode =  ; // TransactionMode.daily;
 
   // A map of String Objects to store the
   //transaction Data while filling the form
@@ -73,12 +73,20 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
     // code for saving on the firebase
     try {
       // checking if the transaction mode is daily
-      if (_transactionMode == TransactionMode.daily) {
+      if (widget.mode == TransactionMode.daily) {
         // provider method to add the transaction of the user in UI and firebase
         await Provider.of<Transactions>(context, listen: false).addTransaction(
           double.parse(_transactionData['amount'].toString()),
           _transactionData['date'] as DateTime,
           _transactionData['title'].toString(),
+          'daily_transactions',
+        );
+      } else if (widget.mode == TransactionMode.monthly) {
+        await Provider.of<Transactions>(context, listen: false).addTransaction(
+          double.parse(_transactionData['amount'].toString()),
+          _transactionData['date'] as DateTime,
+          _transactionData['title'].toString(),
+          'monthly_transactions',
         );
       }
     } catch (error) {
