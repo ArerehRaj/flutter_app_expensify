@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../screens/auth_screen.dart';
 import '../screens/daily_transactions.dart';
+import '../screens/monthly_transactions.dart';
 
 class TabBarScreen extends StatefulWidget {
   @override
@@ -79,7 +80,7 @@ class _TabBarScreenState extends State<TabBarScreen> {
         body: TabBarView(
           children: [
             DailyTransactions(),
-            const AuthScreen(),
+            const MonthlyTransactions(),
             const AuthScreen(),
           ],
         ),

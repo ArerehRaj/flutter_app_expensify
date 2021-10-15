@@ -21,15 +21,25 @@ class MyApp extends StatelessWidget {
         ),
         // Proxy Provider for Authentication and Transactions both
         ChangeNotifierProxyProvider<Auth, Transactions>(
-          update: (ctx, auth, previousTransactions) => Transactions(
+          update: (ctx, auth, previousTransactions) => Transactions.daily(
             auth.token,
             auth.userID,
             previousTransactions == null
                 ? []
                 : previousTransactions.getTransactions,
           ),
-          create: (_) => Transactions('', '', []),
-        )
+          create: (_) => Transactions.daily('', '', []),
+        ),
+        ChangeNotifierProxyProvider<Auth, Transactions>(
+          update: (ctx, auth, previousTransactions) => Transactions.monthly(
+            auth.token,
+            auth.userID,
+            previousTransactions == null
+                ? []
+                : previousTransactions.getMonthlyTransactions,
+          ),
+          create: (_) => Transactions.monthly('', '', []),
+        ),
       ],
       // Consumer set up for authentication incase of
       //changes in screen during authentication

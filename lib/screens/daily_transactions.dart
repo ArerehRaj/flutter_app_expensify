@@ -6,6 +6,7 @@ import '../providers/transactions.dart';
 import '../widgets/chart.dart';
 import '../widgets/transaction_item.dart' as ti_widget;
 import '../widgets/new_transaction_form.dart';
+import '../widgets/no_transactions.dart';
 
 class DailyTransactions extends StatefulWidget {
   static const routeName = '/daily-transaction';
@@ -82,37 +83,7 @@ class _DailyTransactionsState extends State<DailyTransactions> {
                     // if there are no transactions for the user
                     // then show the message to the user
                     child: transactionsData.getTransactions.isEmpty
-                        ? Expanded(
-                            child: LayoutBuilder(
-                              builder: (ctx, constraints) {
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'No transactions added yet!',
-                                      style: TextStyle(
-                                        fontFamily: 'Lato',
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 45,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    Container(
-                                      height: constraints.maxHeight * 0.3,
-                                      child: Image.asset(
-                                        'assets/images/emptyBox.png',
-                                        fit: BoxFit.fill,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          )
+                        ? const NoTransactions()
                         :
                         // if there are transactions then create transaction
                         // item widget for each transaction obejct
@@ -131,7 +102,7 @@ class _DailyTransactionsState extends State<DailyTransactions> {
                   ),
                   // setting up the add button
                   Padding(
-                    padding: EdgeInsets.all(30),
+                    padding: const EdgeInsets.all(30),
                     child: FloatingActionButton(
                       onPressed: () => _startAddNewTransaction(context),
                       child: const Icon(

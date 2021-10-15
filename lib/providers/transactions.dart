@@ -1,3 +1,4 @@
+import 'package:expensify_app/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -22,25 +23,36 @@ class TransactionItem {
 
 class Transactions with ChangeNotifier {
   // List of Transactions
-  List<TransactionItem> _transactions = [];
+  List<TransactionItem> _dailyTransactions = [];
+  List<TransactionItem> _monthlyTransactions = [];
 
   final String token;
   final String userId;
 
-  Transactions(
+  Transactions.daily(
     this.token,
     this.userId,
-    this._transactions,
+    this._dailyTransactions,
   );
 
-  // get function to get the copy of transaction list
+  Transactions.monthly(
+    this.token,
+    this.userId,
+    this._monthlyTransactions,
+  );
+
+  // get function to get the copy of daily transaction list
   List<TransactionItem> get getTransactions {
-    return [..._transactions];
+    return [..._dailyTransactions];
+  }
+
+  List<TransactionItem> get getMonthlyTransactions {
+    return [..._monthlyTransactions];
   }
 
   // get function to get the Transaction item object from the list
   TransactionItem getTransactionById(String id) {
-    return _transactions.firstWhere((transaction) => transaction.id == id);
+    return _dailyTransactions.firstWhere((transaction) => transaction.id == id);
   }
 
   // async function to add a new transaction over firebase
@@ -64,7 +76,7 @@ class Transactions with ChangeNotifier {
     );
     // adding the transaction in transaction
     //list to render over the user's UI
-    _transactions.add(
+    _dailyTransactions.add(
       TransactionItem(
         id: json.decode(response.body)['name'],
         title: title,
@@ -120,7 +132,7 @@ class Transactions with ChangeNotifier {
 
     // setting the loaded transactions to our class
     // transaction list which is used over the app
-    _transactions = loadedTransactions;
+    _dailyTransactions = loadedTransactions;
     notifyListeners();
   }
 
@@ -129,10 +141,10 @@ class Transactions with ChangeNotifier {
   Future<void> deleteTransaction(String id) async {
     // getting the index of that transaction from transaction list
     final existingTransactionIndex =
-        _transactions.indexWhere((trx) => trx.id == id);
+        _dailyTransactions.indexWhere((trx) => trx.id == id);
 
     // fetching the transaction item object from our class transaction list
-    var existingTransaction = _transactions[existingTransactionIndex];
+    var existingTransaction = _dailyTransactions[existingTransactionIndex];
 
     // url to delete that particular transaction of the user from the firebase
     final url = Uri.parse(
@@ -140,7 +152,7 @@ class Transactions with ChangeNotifier {
 
     // removing the transaction from our class
     // transaction list and updating the UI
-    _transactions.removeAt(existingTransactionIndex);
+    _dailyTransactions.removeAt(existingTransactionIndex);
     notifyListeners();
 
     // sending the delete request over firebase
@@ -149,7 +161,7 @@ class Transactions with ChangeNotifier {
     // if the response status code is greater than 400 then there is error in request
     // so dont delete the transaction and add it once again in the list and update user's UI
     if (response.statusCode >= 400) {
-      _transactions.insert(existingTransactionIndex, existingTransaction);
+      _dailyTransactions.insert(existingTransactionIndex, existingTransaction);
       notifyListeners();
 
       // throw exception here
