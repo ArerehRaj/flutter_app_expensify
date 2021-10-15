@@ -1,9 +1,9 @@
-import 'package:expensify_app/widgets/chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/transactions.dart';
+import '../widgets/chart.dart';
 import '../widgets/transaction_item.dart' as ti_widget;
 import '../widgets/new_transaction_form.dart';
 
