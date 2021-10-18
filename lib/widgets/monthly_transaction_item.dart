@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 
 import '../providers/transactions.dart';
 
@@ -7,11 +8,13 @@ class MonthlyTransactionItem extends StatefulWidget {
   // final TransactionItem transaction;
   final int monthNumber;
   final double totalSpending;
+  final List monthlyTransactions;
 
   MonthlyTransactionItem(
     // this.transaction,
     this.monthNumber,
     this.totalSpending,
+    this.monthlyTransactions,
   );
 
   @override
@@ -31,6 +34,8 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
 
     return '';
   }
+
+  var _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +57,56 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
               style: const TextStyle(fontSize: 17),
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.expand_more),
-              onPressed: () {},
+              icon: Icon(
+                _isExpanded ? Icons.expand_less : Icons.expand_more,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
             ),
           ),
+          if (_isExpanded)
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 4,
+              ),
+              height: min(widget.monthlyTransactions.length * 25.0 + 20, 100),
+              child: ListView(
+                children: widget.monthlyTransactions
+                    .map((trx) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              trx.title,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '₹${trx.amount.toString()}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              DateFormat('dd/MM/yyyy').format(trx.date),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ))
+                    .toList(),
+              ),
+            ),
         ],
       ),
     );

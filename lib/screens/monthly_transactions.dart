@@ -67,6 +67,7 @@ class _MonthlyTransactionsState extends State<MonthlyTransactions> {
                         itemBuilder: (context, index) => MonthlyTransactionItem(
                           monthlyTransactionData.getMonthNumberList[index],
                           monthlyTransactionData.getMonthTotalAmountList[index],
+                          monthlyTransactionData.getMonthTransactionList[index],
                         ),
                         itemCount: monthlyTransactionData
                             .getMonthlyTransactions.length,
