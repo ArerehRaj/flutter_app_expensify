@@ -24,17 +24,23 @@ class TransactionItem {
 class Transactions with ChangeNotifier {
   // List of Transactions
   List<TransactionItem> _dailyTransactions = [];
-  List<TransactionItem> _monthlyTransactions = [];
+
+  // List<TransactionItem> _monthlyTransactions = [];
+
+  // Map to store the details of monthly transactions
+  Map<int, Map<String, Object>> _monthlyTransactions = {};
 
   final String token;
   final String userId;
 
+  // constructor for daily transactions
   Transactions.daily(
     this.token,
     this.userId,
     this._dailyTransactions,
   );
 
+  // constructor for monthly transactions
   Transactions.monthly(
     this.token,
     this.userId,
@@ -46,8 +52,9 @@ class Transactions with ChangeNotifier {
     return [..._dailyTransactions];
   }
 
-  List<TransactionItem> get getMonthlyTransactions {
-    return [..._monthlyTransactions];
+  // fet function to get the copy of monthly transactions map
+  Map<int, Map<String, Object>> get getMonthlyTransactions {
+    return {..._monthlyTransactions};
   }
 
   // get function to get the Transaction item object from the list
@@ -58,13 +65,20 @@ class Transactions with ChangeNotifier {
   // async function to add a new transaction over firebase
   Future<void> addTransaction(
       double amount, DateTime date, String title, String identifier) async {
-    // url to save the transaction for the user
-    final url = Uri.parse(
-        'https://expensify-8324b-default-rtdb.firebaseio.com/$identifier/$userId.json?auth=$token');
+    // url to save the transaction for the user based of identifier
+    // identifier can be either monthly_transactions or
+    // daily_transactions as value
+    var urlString =
+        'https://expensify-8324b-default-rtdb.firebaseio.com/$identifier/$userId.json?auth=$token';
 
-    // post request to send over the url to firebase
     var response;
+
+    // checking if the request is for daily_transactions
     if (identifier == 'daily_transactions') {
+      // parsing the url for daily_transactions
+      final url = Uri.parse(urlString);
+
+      // sending the post request for daily_transactions to firebase
       response = await http.post(
         url,
         // sending json encoded data
@@ -78,7 +92,7 @@ class Transactions with ChangeNotifier {
       );
 
       // adding the transaction in transaction
-      //list to render over the user's UI
+      // list to render over the user's UI
       _dailyTransactions.add(
         TransactionItem(
           id: json.decode(response.body)['name'],
@@ -87,7 +101,17 @@ class Transactions with ChangeNotifier {
           date: date,
         ),
       );
-    } else if (identifier == 'monthly_transactions') {
+    }
+    // checking if the request is for monthly_transactions
+    else if (identifier == 'monthly_transactions') {
+      // updating the string to upload for a specific month number
+      urlString =
+          'https://expensify-8324b-default-rtdb.firebaseio.com/$identifier/$userId/${date.month}.json?auth=$token';
+
+      // parsing the url for daily_transactions
+      final url = Uri.parse(urlString);
+
+      // sending the post request for monthly_transactions to firebase
       response = await http.post(
         url,
         body: json.encode(
@@ -95,11 +119,28 @@ class Transactions with ChangeNotifier {
             'amount': amount,
             'title': title,
             'dateTime': date.toIso8601String(),
-            'month': date.month,
           },
         ),
       );
-      _monthlyTransactions.add(
+
+      // checking if the new monthly transaction's month number is not in firebase
+      // then create and store here with empty values
+      if (_monthlyTransactions[date.month] == null) {
+        _monthlyTransactions[date.month] = {'total': 0.0, 'transactions': []};
+      }
+
+      // var to store the new total for that month
+      var newTotal =
+          double.parse(_monthlyTransactions[date.month]!['total'].toString()) +
+              amount;
+      _monthlyTransactions[date.month]!['total'] = newTotal;
+
+      // new list with the new added transactions
+      final newList = _monthlyTransactions[date.month]!['transactions'] as List;
+
+      // adding the transaction in transaction
+      // list of the map to render over the user's UI
+      newList.add(
         TransactionItem(
           id: json.decode(response.body)['name'],
           title: title,
@@ -121,9 +162,6 @@ class Transactions with ChangeNotifier {
     // sending get request to firebase
     final response = await http.get(url);
 
-    // creating a empty list for loading transactions from firebase
-    final List<TransactionItem> loadedTransactions = [];
-
     // if the response.body is null i.e. no transactions
     // for the user then return
     if (response.body == 'null') {
@@ -140,27 +178,66 @@ class Transactions with ChangeNotifier {
       return;
     }
 
-    // for each transaction we are looping and
-    // adding in it the loaded transaction list by creating
-    // new transaction item objects
-    extractedTransactionData.forEach((transactionId, transactionData) {
-      loadedTransactions.add(
-        TransactionItem(
-          id: transactionId,
-          title: transactionData['title'],
-          amount: transactionData['amount'],
-          date: DateTime.parse(transactionData['dateTime']),
-        ),
-      );
-    });
-
-    // setting the loaded transactions to our class
-    // transaction list which is used over the app
     if (identifier == 'daily_transactions') {
+      // creating a new empty list for loading the transactions from firebase
+      final List<TransactionItem> loadedTransactions = [];
+
+      // for each transaction we are looping and
+      // adding in it the loaded transaction list by creating
+      // new transaction item objects
+      extractedTransactionData.forEach((transactionId, transactionData) {
+        loadedTransactions.add(
+          TransactionItem(
+            id: transactionId,
+            title: transactionData['title'],
+            amount: transactionData['amount'],
+            date: DateTime.parse(transactionData['dateTime']),
+          ),
+        );
+      });
+
+      // updating the loaded transaction to render the users UI
       _dailyTransactions = loadedTransactions;
-    } else {
+    }
+    // checking for monthly transactions
+    else if (identifier == 'monthly_transactions') {
+      print(response.body);
+
+      // empty map for monthly transactions
+      final Map<int, Map<String, Object>> loadedTransactions = {};
+
+      // looping over each month and its transactions to calculate the total sum
+      // of that month and adding the transactions in a list
+      extractedTransactionData.forEach((monthNumber, monthlyTransactions) {
+        // set the vars for total and list
+        var total = 0.0;
+        final trx_list = [];
+
+        // setting the value as empty map for that particular month
+        loadedTransactions[int.parse(monthNumber)] = {};
+
+        // looping over each transactions for that month
+        monthlyTransactions.forEach((transactionId, transactionData) {
+          // addiing the sum of amount
+          total += transactionData['amount'];
+
+          // adding the transaction item in the list
+          trx_list.add(
+            TransactionItem(
+              id: transactionId,
+              title: transactionData['title'],
+              amount: transactionData['amount'],
+              date: DateTime.parse(transactionData['dateTime']),
+            ),
+          );
+        });
+        // updating the value in map to render at users UI
+        loadedTransactions[int.parse(monthNumber)]!['total'] = total;
+        loadedTransactions[int.parse(monthNumber)]!['transactions'] = trx_list;
+      });
       _monthlyTransactions = loadedTransactions;
     }
+
     notifyListeners();
   }
 

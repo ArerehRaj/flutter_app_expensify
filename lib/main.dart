@@ -35,10 +35,10 @@ class MyApp extends StatelessWidget {
             auth.token,
             auth.userID,
             previousTransactions == null
-                ? []
+                ? {}
                 : previousTransactions.getMonthlyTransactions,
           ),
-          create: (_) => Transactions.monthly('', '', []),
+          create: (_) => Transactions.monthly('', '', {}),
         ),
       ],
       // Consumer set up for authentication incase of
