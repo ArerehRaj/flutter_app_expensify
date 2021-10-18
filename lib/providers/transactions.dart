@@ -30,6 +30,10 @@ class Transactions with ChangeNotifier {
   // Map to store the details of monthly transactions
   Map<int, Map<String, Object>> _monthlyTransactions = {};
 
+  List<int> _monthNumbersList = [];
+  List<double> _monthTotalAmountList = [];
+  List<List> _monthTransactionList = [];
+
   final String token;
   final String userId;
 
@@ -46,6 +50,18 @@ class Transactions with ChangeNotifier {
     this.userId,
     this._monthlyTransactions,
   );
+
+  List<int> get getMonthNumberList {
+    return [..._monthNumbersList].reversed.toList();
+  }
+
+  List<double> get getMonthTotalAmountList {
+    return [..._monthTotalAmountList].reversed.toList();
+  }
+
+  List<List> get getMonthTransactionList {
+    return [..._monthTransactionList].reversed.toList();
+  }
 
   // get function to get the copy of daily transaction list
   List<TransactionItem> get getTransactions {
@@ -231,6 +247,9 @@ class Transactions with ChangeNotifier {
             ),
           );
         });
+        _monthNumbersList.add(int.parse(monthNumber));
+        _monthTotalAmountList.add(total);
+        _monthTransactionList.add(trx_list);
         // updating the value in map to render at users UI
         loadedTransactions[int.parse(monthNumber)]!['total'] = total;
         loadedTransactions[int.parse(monthNumber)]!['transactions'] = trx_list;

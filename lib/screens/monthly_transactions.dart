@@ -1,3 +1,4 @@
+import 'package:expensify_app/widgets/monthly_transaction_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,6 +52,7 @@ class _MonthlyTransactionsState extends State<MonthlyTransactions> {
   @override
   Widget build(BuildContext context) {
     final monthlyTransactionData = Provider.of<Transactions>(context);
+    print(monthlyTransactionData.getMonthlyTransactions.length);
     return _isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -60,8 +62,15 @@ class _MonthlyTransactionsState extends State<MonthlyTransactions> {
             children: [
               monthlyTransactionData.getMonthlyTransactions.isEmpty
                   ? const NoTransactions()
-                  : const Center(
-                      child: Text('Monthly Transactions'),
+                  : Expanded(
+                      child: ListView.builder(
+                        itemBuilder: (context, index) => MonthlyTransactionItem(
+                          monthlyTransactionData.getMonthNumberList[index],
+                          monthlyTransactionData.getMonthTotalAmountList[index],
+                        ),
+                        itemCount: monthlyTransactionData
+                            .getMonthlyTransactions.length,
+                      ),
                     ),
               Padding(
                 padding: const EdgeInsets.all(30),
