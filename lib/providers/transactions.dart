@@ -51,6 +51,10 @@ class Transactions with ChangeNotifier {
     this._monthlyTransactions,
   );
 
+  List get getListOfMap {
+    return [..._monthlyTransactions.entries.toList()].reversed.toList();
+  }
+
   List<int> get getMonthNumberList {
     return [..._monthNumbersList].reversed.toList();
   }
@@ -138,11 +142,47 @@ class Transactions with ChangeNotifier {
           },
         ),
       );
-
+      // var index = -1;
+      // index = _monthNumbersList
+      //     .indexWhere((monthNumber) => date.month == monthNumber);
+      // print('1');
+      // print(index);
+      // if (index > -1) {
+      //   _monthNumbersList.insert(index, int.parse(date.month.toString()));
+      // }
       // checking if the new monthly transaction's month number is not in firebase
       // then create and store here with empty values
       if (_monthlyTransactions[date.month] == null) {
         _monthlyTransactions[date.month] = {'total': 0.0, 'transactions': []};
+        // _monthNumbersList.add(int.parse(date.month.toString()));
+        // if (date.month < _monthNumbersList[0]) {
+        //   index = 0;
+        //   print('2');
+        //   print(index);
+        // } else if (date.month >
+        //     _monthNumbersList[_monthNumbersList.length - 1]) {
+        //   index = _monthNumbersList.length;
+        //   print('3');
+        //   print(index);
+        // } else {
+        //   for (var i = 1; i < _monthNumbersList.length - 1; i++) {
+        //     if (date.month < _monthNumbersList[i]) {
+        //       index = i;
+        //       break;
+        //     }
+        //   }
+        //   print('4');
+        //   print(index);
+        // }
+        // _monthNumbersList.insert(index, int.parse(date.month.toString()));
+        // if (date.month < _monthNumbersList.length) {
+        //   if (date.month < _monthNumbersList[0]) {
+        //     index = 0;
+        //   }
+        // } else if (date.month > _monthNumbersList.length) {
+        //   index = _monthNumbersList.length;
+        // }
+        // index = _monthNumbersList.length - 1;
       }
 
       // var to store the new total for that month
@@ -164,7 +204,14 @@ class Transactions with ChangeNotifier {
           date: date,
         ),
       );
+
+      // _monthTotalAmountList.insert(index, newTotal);
+      // _monthTransactionList.insert(index, newList);
+      // _monthNumbersList.add(int.parse(monthNumber));
+      // _monthTotalAmountList.add(total);
+      // _monthTransactionList.add(trx_list);
     }
+    print('before notify');
     notifyListeners();
   }
 
@@ -186,6 +233,7 @@ class Transactions with ChangeNotifier {
 
     // extracting the transaction data from the
     // response.body in the form of a map
+    // print(response.body);
     final extractedTransactionData =
         json.decode(response.body) as Map<String, dynamic>;
 
@@ -217,8 +265,6 @@ class Transactions with ChangeNotifier {
     }
     // checking for monthly transactions
     else if (identifier == 'monthly_transactions') {
-      print(response.body);
-
       // empty map for monthly transactions
       final Map<int, Map<String, Object>> loadedTransactions = {};
 

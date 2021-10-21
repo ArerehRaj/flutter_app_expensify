@@ -65,9 +65,14 @@ class _MonthlyTransactionsState extends State<MonthlyTransactions> {
                   : Expanded(
                       child: ListView.builder(
                         itemBuilder: (context, index) => MonthlyTransactionItem(
-                          monthlyTransactionData.getMonthNumberList[index],
-                          monthlyTransactionData.getMonthTotalAmountList[index],
-                          monthlyTransactionData.getMonthTransactionList[index],
+                          // monthlyTransactionData.getMonthNumberList[index],
+                          // monthlyTransactionData.getMonthTotalAmountList[index],
+                          // monthlyTransactionData.getMonthTransactionList[index],
+                          monthlyTransactionData.getListOfMap[index].key,
+                          monthlyTransactionData
+                              .getListOfMap[index].value['total'],
+                          monthlyTransactionData
+                              .getListOfMap[index].value['transactions'],
                         ),
                         itemCount: monthlyTransactionData
                             .getMonthlyTransactions.length,
