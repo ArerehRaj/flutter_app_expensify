@@ -7,18 +7,12 @@ import '../providers/transactions.dart';
 class MonthlyTransactionDetailScreen extends StatelessWidget {
   static const routeName = '/detail-view';
 
-  // final String month;
-  // final List monthlyTransactions;
-
-  // MonthlyTransactionDetailScreen({
-  //   required this.month,
-  //   required this.monthlyTransactions,
-  // });
-
   @override
   Widget build(BuildContext context) {
+    // fetching the arguments passed in the pushNamed function
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
+    // fetching the month and the list of transactions of that month
     final String month = args['month'].toString();
     final List monthlyTransactions = args['transactions'] as List;
     return Scaffold(
@@ -27,8 +21,6 @@ class MonthlyTransactionDetailScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // if there are transactions then create transaction
-          // item widget for each transaction obejct
           Expanded(
             child: ListView.builder(
               itemBuilder: (ctx, index) {
@@ -52,9 +44,9 @@ class MonthlyTransactionDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // showing the tital
+                    // showing the title
                     title: Text(monthlyTransactions[index].title),
-                    // showing the sub title
+                    // showing the sub title --> date
                     subtitle: Text(
                       DateFormat.yMMMd()
                           .format(monthlyTransactions[index].date),

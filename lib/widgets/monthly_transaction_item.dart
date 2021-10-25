@@ -57,11 +57,14 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
             'Do you want to view your monthly transactions in detail?'),
         actions: [
           // if the user clicks yes then pop the alert box
-          // and return true hence deleted
+          // then the user will be redirected to a new screen
+          // showing the details of that months transaction
           FlatButton(
             onPressed: () {
+              // first popping the alert box
               Navigator.of(ctx).pop();
-              // got to edit page
+              // redirecting the user and also passing the
+              // arguments to show on the next screen
               Navigator.of(context).pushNamed(
                   MonthlyTransactionDetailScreen.routeName,
                   arguments: {
@@ -76,7 +79,7 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
             child: const Text('Yes'),
           ),
           // if the user clicks no then pop the alert box
-          // and return false hence not deleted
+          // then the alert box will disappear
           FlatButton(
             onPressed: () {
               Navigator.of(ctx).pop();
@@ -90,16 +93,19 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
 
   @override
   Widget build(BuildContext context) {
+    // animated container to show the slide down and slide up effect
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height: _isExpanded
           ? min(widget.monthlyTransactions.length * 25.0 + 110, 200)
           : 95,
+      // card to show the month name and total spending of that month
       child: Card(
         margin: const EdgeInsets.all(10),
         child: Column(
           children: [
             ListTile(
+              // displaying the month name
               title: Text(
                 getMonthName(
                   int.parse(
@@ -108,13 +114,16 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
                 ),
                 style: const TextStyle(fontSize: 19),
               ),
+              // displaying the total spending of that month
               subtitle: Text(
                 '₹${widget.totalSpending}',
                 style: const TextStyle(fontSize: 17),
               ),
+              // setting a long press to show the alert box
               onLongPress: () {
                 getPopUp();
               },
+              // icon to expand
               trailing: IconButton(
                 icon: Icon(
                   _isExpanded ? Icons.expand_less : Icons.expand_more,
@@ -126,8 +135,10 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
                 },
               ),
             ),
+            // if expanded then show the transactions of that month
             if (_isExpanded)
               Expanded(
+                // animated container
                 child: AnimatedContainer(
                   duration: const Duration(
                     milliseconds: 300,
@@ -144,6 +155,7 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
                         .map((trx) => Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                // title of that transaction
                                 Text(
                                   trx.title,
                                   style: const TextStyle(
@@ -152,6 +164,7 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
                                   ),
                                 ),
                                 const Spacer(),
+                                // amount of that transaction
                                 Text(
                                   '₹${trx.amount.toString()}',
                                   style: const TextStyle(
@@ -160,6 +173,7 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
                                   ),
                                 ),
                                 const Spacer(),
+                                // date of that transaction
                                 Text(
                                   DateFormat('dd/MM/yyyy').format(trx.date),
                                   style: const TextStyle(
