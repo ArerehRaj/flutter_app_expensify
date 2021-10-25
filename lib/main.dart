@@ -7,6 +7,7 @@ import './providers/transactions.dart';
 import './screens/auth_screen.dart';
 import './screens/tab_bar_screen.dart';
 import './screens/daily_transactions.dart';
+import './screens/monthly_transactions_detail_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -69,6 +70,8 @@ class MyApp extends StatelessWidget {
           // setting the basic routes here for whole app
           routes: {
             DailyTransactions.routeName: (ctx) => DailyTransactions(),
+            MonthlyTransactionDetailScreen.routeName: (ctx) =>
+                MonthlyTransactionDetailScreen(),
           },
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:expensify_app/screens/monthly_transactions_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
@@ -45,6 +46,48 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
 
   var _isExpanded = false;
 
+  void getPopUp() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(
+          'View In Detail',
+        ),
+        content: const Text(
+            'Do you want to view your monthly transactions in detail?'),
+        actions: [
+          // if the user clicks yes then pop the alert box
+          // and return true hence deleted
+          FlatButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              // got to edit page
+              Navigator.of(context).pushNamed(
+                  MonthlyTransactionDetailScreen.routeName,
+                  arguments: {
+                    'transactions': widget.monthlyTransactions,
+                    'month': getMonthName(
+                      int.parse(
+                        widget.monthNumber.toString(),
+                      ),
+                    )
+                  });
+            },
+            child: const Text('Yes'),
+          ),
+          // if the user clicks no then pop the alert box
+          // and return false hence not deleted
+          FlatButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('No'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -69,6 +112,9 @@ class _MonthlyTransactionItemState extends State<MonthlyTransactionItem> {
                 '₹${widget.totalSpending}',
                 style: const TextStyle(fontSize: 17),
               ),
+              onLongPress: () {
+                getPopUp();
+              },
               trailing: IconButton(
                 icon: Icon(
                   _isExpanded ? Icons.expand_less : Icons.expand_more,
