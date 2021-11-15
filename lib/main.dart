@@ -1,3 +1,4 @@
+import 'package:expensify_app/providers/investments.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,17 @@ class MyApp extends StatelessWidget {
         // Provider for Authentication
         ChangeNotifierProvider(
           create: (ctx) => Auth(),
+        ),
+        // Proxy Provider for Authentication and Investments both
+        ChangeNotifierProxyProvider<Auth, Investments>(
+          update: (ctx, auth, previousInvestments) => Investments(
+            auth.token,
+            auth.userID,
+            previousInvestments == null
+                ? []
+                : previousInvestments.getUserInvestmentsList,
+          ),
+          create: (_) => Investments('', '', []),
         ),
         // Proxy Provider for Authentication and Transactions both
         ChangeNotifierProxyProvider<Auth, Transactions>(

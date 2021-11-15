@@ -5,6 +5,7 @@ import '../providers/auth.dart';
 import '../screens/auth_screen.dart';
 import '../screens/daily_transactions.dart';
 import '../screens/monthly_transactions.dart';
+import '../screens/investments_screen.dart';
 
 class TabBarScreen extends StatefulWidget {
   @override
@@ -81,7 +82,7 @@ class _TabBarScreenState extends State<TabBarScreen> {
           children: [
             DailyTransactions(),
             const MonthlyTransactions(),
-            const AuthScreen(),
+            InvestmentsScreen(),
           ],
         ),
       ),
