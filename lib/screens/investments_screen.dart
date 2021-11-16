@@ -123,8 +123,73 @@ class SearchedStockCard extends StatelessWidget {
   final Investments investmentsData;
   final index;
 
+  // widget builder method to return the message button in the alert box
+  Widget getResponseButton(String message, BuildContext ctx) {
+    return Container(
+      child: RaisedButton(
+        onPressed: () {
+          Navigator.of(ctx).pop();
+        },
+        color: message == 'Yes' ? Colors.green : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: message == 'Yes'
+                  ? const TextStyle(
+                      fontFamily: 'Lato',
+                      fontSize: 16,
+                      color: Colors.white,
+                    )
+                  : const TextStyle(
+                      fontFamily: 'Lato',
+                      fontSize: 16,
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // function to show the alertbox when the user wants to add a stock in his list
+    void showAlertBox(String stockName) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Text('Are you sure?'),
+            ],
+          ),
+          content: Text(
+            'You wanna add $stockName',
+            textAlign: TextAlign.center,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                getResponseButton('Yes', ctx),
+                getResponseButton('No', ctx),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
     return Card(
       elevation: 5,
       margin: const EdgeInsets.symmetric(
@@ -141,8 +206,11 @@ class SearchedStockCard extends StatelessWidget {
         trailing: IconButton(
           icon: const Icon(
             Icons.add_box_outlined,
+            color: Colors.green,
           ),
-          onPressed: () {},
+          onPressed: () {
+            showAlertBox(investmentsData.getUrlStocks[index]['name']);
+          },
         ),
       ),
     );
