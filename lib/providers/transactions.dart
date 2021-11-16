@@ -1,3 +1,4 @@
+import 'package:expensify_app/providers/investments.dart';
 import 'package:expensify_app/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;

@@ -69,4 +69,14 @@ class Investments with ChangeNotifier {
     _urlStocks = myStocksList;
     notifyListeners();
   }
+
+  // method to delete or empty url stocks lists when user changes tab
+  // or searches for other stocks
+  void emptyUserSearch() {
+    // if stocks are present then only empty the list
+    if (_urlStocks.isNotEmpty) {
+      _urlStocks = [];
+    }
+    notifyListeners();
+  }
 }

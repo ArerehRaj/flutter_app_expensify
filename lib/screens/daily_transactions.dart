@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/transactions.dart';
+import '../providers/investments.dart';
 import '../widgets/chart.dart';
 import '../widgets/transaction_item.dart' as ti_widget;
 import '../widgets/new_transaction_form.dart';
@@ -24,6 +25,12 @@ class _DailyTransactionsState extends State<DailyTransactions> {
   void initState() {
     // set the loading to true and will show the loading screen
     _isLoading = true;
+
+    // provider call to delete user search details of stocks if exists
+    final investmentData = Provider.of<Investments>(context, listen: false);
+    if (investmentData.getUrlStocks.isNotEmpty) {
+      investmentData.emptyUserSearch();
+    }
 
     // calling the function to set the transaction data from firebase
     Provider.of<Transactions>(context, listen: false)
@@ -84,7 +91,9 @@ class _DailyTransactionsState extends State<DailyTransactions> {
                     // if there are no transactions for the user
                     // then show the message to the user
                     child: transactionsData.getTransactions.isEmpty
-                        ? const NoTransactions()
+                        ? const NoTransactions(
+                            typeOfScreen: 'daily_transactions',
+                          )
                         :
                         // if there are transactions then create transaction
                         // item widget for each transaction obejct

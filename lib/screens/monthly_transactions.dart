@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/transactions.dart';
+import '../providers/investments.dart';
 import '../widgets/no_transactions.dart';
 import '../widgets/new_transaction_form.dart';
 
@@ -19,6 +20,13 @@ class _MonthlyTransactionsState extends State<MonthlyTransactions> {
   @override
   void initState() {
     _isLoading = true;
+
+    // provider call to delete user search details of stocks if exists
+    final investmentData = Provider.of<Investments>(context, listen: false);
+    if (investmentData.getUrlStocks.isNotEmpty) {
+      investmentData.emptyUserSearch();
+    }
+
     Provider.of<Transactions>(context, listen: false)
         .fetchAndSetTransactions('monthly_transactions')
         // once the data is fetched then set the loading to false
@@ -60,7 +68,9 @@ class _MonthlyTransactionsState extends State<MonthlyTransactions> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               monthlyTransactionData.getMonthlyTransactions.isEmpty
-                  ? const NoTransactions()
+                  ? const NoTransactions(
+                      typeOfScreen: 'monthly_transactions',
+                    )
                   : Expanded(
                       child: ListView.builder(
                         itemBuilder: (context, index) => MonthlyTransactionItem(

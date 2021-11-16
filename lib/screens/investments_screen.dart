@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/investments.dart';
+import '../widgets/no_transactions.dart';
 
 class InvestmentsScreen extends StatefulWidget {
   @override
@@ -41,14 +42,16 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
         Form(
           key: _formKey,
           // extracted method for displaying the search card widget
-          child: searchCard(),
+          child: searchCard(investmentsData),
         ),
-        const SizedBox(
-          height: 18,
-        ),
+        // const SizedBox(
+        //   height: 18,
+        // ),
         // if no searches then show user added stocks else show the search results
         investmentsData.getUrlStocks.isEmpty
-            ? const Text('No Searches')
+            ? const NoTransactions(
+                typeOfScreen: 'investments',
+              )
             : Expanded(
                 child: ListView.builder(
                   itemCount: investmentsData.getUrlStocks.length,
@@ -65,7 +68,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
   }
 
   // extracted method for displaying the search card widget
-  Card searchCard() {
+  Card searchCard(Investments investmentsData) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12),
       elevation: 10,
@@ -95,6 +98,14 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
             return null;
           },
           onSaved: (value) => text = value!,
+          // on tap of text form field we will empty
+          // the list if stocks exists in them.
+          onTap: () {
+            // if stocks are there in the list then empty the list
+            if (investmentsData.getUrlStocks.isNotEmpty) {
+              investmentsData.emptyUserSearch();
+            }
+          },
         ),
       ),
     );
