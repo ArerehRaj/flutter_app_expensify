@@ -138,6 +138,12 @@ class SearchedStockCard extends StatelessWidget {
         title: Text(investmentsData.getUrlStocks[index]['symbol']),
         // showing the sub title
         subtitle: Text(investmentsData.getUrlStocks[index]['name']),
+        trailing: IconButton(
+          icon: const Icon(
+            Icons.add_box_outlined,
+          ),
+          onPressed: () {},
+        ),
       ),
     );
   }
