@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/investments.dart';
 import '../widgets/no_transactions.dart';
+import '../widgets/user_stock_item.dart';
 
 class InvestmentsScreen extends StatefulWidget {
   @override
@@ -52,6 +53,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
   @override
   Widget build(BuildContext context) {
     final investmentsData = Provider.of<Investments>(context);
+    final userStocks = investmentsData.getUserInvestmentsList;
     return _isLoading
         // if loading then show circular progress indicator else the list
         ? const Center(
@@ -67,14 +69,27 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                 // extracted method for displaying the search card widget
                 child: searchCard(investmentsData),
               ),
-              // const SizedBox(
-              //   height: 18,
-              // ),
+              const SizedBox(
+                height: 18,
+              ),
               // if no searches then show user added stocks else show the search results
               investmentsData.getUrlStocks.isEmpty
-                  ? const NoTransactions(
-                      typeOfScreen: 'investments',
-                    )
+                  ? userStocks.isNotEmpty
+                      ? Expanded(
+                          child: ListView.builder(
+                          itemBuilder: (ctx, index) {
+                            return UserStockItem(
+                              symbol: userStocks[index].stockLabel,
+                              name: userStocks[index].stockName,
+                              stockId: userStocks[index].id,
+                              stockExchange: userStocks[index].stockExchange,
+                            );
+                          },
+                          itemCount: userStocks.length,
+                        ))
+                      : const NoTransactions(
+                          typeOfScreen: 'investments',
+                        )
                   : Expanded(
                       child: ListView.builder(
                         itemCount: investmentsData.getUrlStocks.length,
