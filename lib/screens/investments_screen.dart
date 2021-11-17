@@ -124,10 +124,16 @@ class SearchedStockCard extends StatelessWidget {
   final index;
 
   // widget builder method to return the message button in the alert box
-  Widget getResponseButton(String message, BuildContext ctx) {
+  Widget getResponseButton(
+      String message, BuildContext ctx, String label, String name) {
     return Container(
       child: RaisedButton(
         onPressed: () {
+          if (message == 'Yes') {
+            investmentsData.emptyUserSearch();
+            investmentsData.addStockInUserList(label, name);
+          }
+
           Navigator.of(ctx).pop();
         },
         color: message == 'Yes' ? Colors.green : null,
@@ -181,8 +187,18 @@ class SearchedStockCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                getResponseButton('Yes', ctx),
-                getResponseButton('No', ctx),
+                getResponseButton(
+                  'Yes',
+                  ctx,
+                  investmentsData.getUrlStocks[index]['symbol'],
+                  investmentsData.getUrlStocks[index]['name'],
+                ),
+                getResponseButton(
+                  'No',
+                  ctx,
+                  investmentsData.getUrlStocks[index]['symbol'],
+                  investmentsData.getUrlStocks[index]['name'],
+                ),
               ],
             ),
           ],

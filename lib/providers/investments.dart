@@ -70,6 +70,32 @@ class Investments with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addStockInUserList(String label, String name) async {
+    final String urlString =
+        'https://expensify-8324b-default-rtdb.firebaseio.com/userStocks/$userId.json?auth=$token';
+    final url = Uri.parse(urlString);
+    final response = await http.post(
+      url,
+      body: json.encode(
+        {
+          'name': name,
+          'symbol': label,
+        },
+      ),
+    );
+
+    _userInvestments.add(
+      InvestmentItem(
+        id: json.decode(response.body)['name'],
+        stockLabel: label,
+        stockName: name,
+        stockExchange: 'BSE',
+      ),
+    );
+
+    notifyListeners();
+  }
+
   // method to delete or empty url stocks lists when user changes tab
   // or searches for other stocks
   void emptyUserSearch() {
