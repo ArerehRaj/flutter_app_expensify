@@ -15,6 +15,24 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
   // var string text to hold the value of user search
   var text = '';
 
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    // setting the isLoading to true
+    _isLoading = true;
+
+    // calling the provider method to fetch and set user stocks on screen loading
+    Provider.of<Investments>(context, listen: false)
+        .fetchAndSetUserStocks()
+        .then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
+  }
+
   // function to submit the form i.e. user search for a stock
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
@@ -34,37 +52,42 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
   @override
   Widget build(BuildContext context) {
     final investmentsData = Provider.of<Investments>(context);
-    return Column(
-      children: [
-        const SizedBox(
-          height: 18,
-        ),
-        Form(
-          key: _formKey,
-          // extracted method for displaying the search card widget
-          child: searchCard(investmentsData),
-        ),
-        // const SizedBox(
-        //   height: 18,
-        // ),
-        // if no searches then show user added stocks else show the search results
-        investmentsData.getUrlStocks.isEmpty
-            ? const NoTransactions(
-                typeOfScreen: 'investments',
-              )
-            : Expanded(
-                child: ListView.builder(
-                  itemCount: investmentsData.getUrlStocks.length,
-                  itemBuilder: (ctx, index) {
-                    return SearchedStockCard(
-                      investmentsData: investmentsData,
-                      index: index,
-                    );
-                  },
-                ),
+    return _isLoading
+        // if loading then show circular progress indicator else the list
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Column(
+            children: [
+              const SizedBox(
+                height: 18,
               ),
-      ],
-    );
+              Form(
+                key: _formKey,
+                // extracted method for displaying the search card widget
+                child: searchCard(investmentsData),
+              ),
+              // const SizedBox(
+              //   height: 18,
+              // ),
+              // if no searches then show user added stocks else show the search results
+              investmentsData.getUrlStocks.isEmpty
+                  ? const NoTransactions(
+                      typeOfScreen: 'investments',
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        itemCount: investmentsData.getUrlStocks.length,
+                        itemBuilder: (ctx, index) {
+                          return SearchedStockCard(
+                            investmentsData: investmentsData,
+                            index: index,
+                          );
+                        },
+                      ),
+                    ),
+            ],
+          );
   }
 
   // extracted method for displaying the search card widget

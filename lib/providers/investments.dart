@@ -96,6 +96,51 @@ class Investments with ChangeNotifier {
     notifyListeners();
   }
 
+  // future method to fetch and set the user stocks from firebase
+  Future<void> fetchAndSetUserStocks() async {
+    // url or api string to fetch the stocks from firebase
+    final String urlString =
+        'https://expensify-8324b-default-rtdb.firebaseio.com/userStocks/$userId.json?auth=$token';
+    final url = Uri.parse(urlString);
+
+    // sending the get request to API
+    final response = await http.get(url);
+
+    // if response body is null then return
+    if (response.body == 'null') {
+      return;
+    }
+
+    // extracting the user stocks as a Map
+    final extractedUserStocks =
+        json.decode(response.body) as Map<String, dynamic>;
+
+    // if extracted user stocks is null then return
+    if (extractedUserStocks == null) {
+      return;
+    }
+
+    // init a list of investment items to store the extracted stocks
+    final List<InvestmentItem> loadedUserStocks = [];
+
+    // looping over each stock which was returned from firebase
+    extractedUserStocks.forEach((userStockId, userStock) {
+      // adding each stock in list as an Investment item object
+      loadedUserStocks.add(
+        InvestmentItem(
+          id: userStockId,
+          stockLabel: userStock['symbol'],
+          stockName: userStock['name'],
+          stockExchange: 'BSE',
+        ),
+      );
+    });
+
+    // setting it to user investments list and notifying the listners
+    _userInvestments = loadedUserStocks;
+    notifyListeners();
+  }
+
   // method to delete or empty url stocks lists when user changes tab
   // or searches for other stocks
   void emptyUserSearch() {
