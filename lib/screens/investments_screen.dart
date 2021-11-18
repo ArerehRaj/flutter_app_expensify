@@ -79,10 +79,11 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                           child: ListView.builder(
                           itemBuilder: (ctx, index) {
                             return UserStockItem(
-                              symbol: userStocks[index].stockLabel,
-                              name: userStocks[index].stockName,
-                              stockId: userStocks[index].id,
-                              stockExchange: userStocks[index].stockExchange,
+                              // symbol: userStocks[index].stockLabel,
+                              // name: userStocks[index].stockName,
+                              // stockId: userStocks[index].id,
+                              // stockExchange: userStocks[index].stockExchange,
+                              stock: userStocks[index],
                             );
                           },
                           itemCount: userStocks.length,

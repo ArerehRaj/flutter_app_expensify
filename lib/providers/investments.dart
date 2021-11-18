@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 
 class InvestmentItem {
@@ -8,12 +9,18 @@ class InvestmentItem {
   final String stockLabel;
   final String stockName;
   final String stockExchange;
+  final bool isProfit;
+  final double closePrice;
+  final double percentage;
 
   InvestmentItem({
     required this.id,
     required this.stockLabel,
     required this.stockName,
     required this.stockExchange,
+    required this.isProfit,
+    required this.closePrice,
+    required this.percentage,
   });
 }
 
@@ -70,16 +77,60 @@ class Investments with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<Map> getStockDetails(String symbol) async {
+    final String urlString =
+        'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=$symbol&apikey=NDESB25P2USI9V9L';
+    final url = Uri.parse(urlString);
+    final response = await http.get(url);
+
+    final extractedStockData =
+        json.decode(response.body) as Map<String, dynamic>;
+
+    final stockData =
+        extractedStockData['Time Series (Daily)'] as Map<String, dynamic>;
+    // final todaysTimeStamp = DateTime.now().toString().split(" ")[0];
+
+    var data = {};
+
+    final key = stockData.keys.toList().first;
+
+    final closePrice = double.parse(stockData[key]['4. close']);
+    final openPrice = double.parse(stockData[key]['1. open']);
+
+    final daysPrice = closePrice - openPrice;
+    bool isProfit = true;
+    if (daysPrice < 0) {
+      isProfit = false;
+    }
+    final percentage = (daysPrice / openPrice) * 100;
+    data['isProfit'] = isProfit;
+    data['percentage'] = percentage;
+    data['closePrice'] = closePrice;
+
+    if (!isProfit) {
+      data['percentage'] = -data['percentage'];
+    }
+
+    return data;
+  }
+
   Future<void> addStockInUserList(String label, String name) async {
     final String urlString =
         'https://expensify-8324b-default-rtdb.firebaseio.com/userStocks/$userId.json?auth=$token';
     final url = Uri.parse(urlString);
+
+    var stockDetails;
+    await getStockDetails(label).then((value) => stockDetails = value);
+
     final response = await http.post(
       url,
       body: json.encode(
         {
           'name': name,
           'symbol': label,
+          'isProfit': stockDetails['isProfit'],
+          'percentage': stockDetails['percentage'],
+          'closePrice': stockDetails['closePrice'],
         },
       ),
     );
@@ -90,6 +141,9 @@ class Investments with ChangeNotifier {
         stockLabel: label,
         stockName: name,
         stockExchange: 'BSE',
+        isProfit: stockDetails['isProfit'],
+        percentage: stockDetails['percentage'],
+        closePrice: stockDetails['closePrice'],
       ),
     );
 
@@ -132,6 +186,9 @@ class Investments with ChangeNotifier {
           stockLabel: userStock['symbol'],
           stockName: userStock['name'],
           stockExchange: 'BSE',
+          isProfit: userStock['isProfit'],
+          percentage: userStock['percentage'],
+          closePrice: userStock['closePrice'],
         ),
       );
     });
