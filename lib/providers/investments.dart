@@ -121,6 +121,7 @@ class Investments with ChangeNotifier {
     data['isProfit'] = isProfit;
     data['percentage'] = percentage;
     data['closePrice'] = closePrice;
+    data['date'] = key;
 
     // if loss then set the negative value of percentage as positive
     if (!isProfit) {
@@ -154,6 +155,7 @@ class Investments with ChangeNotifier {
           'isProfit': stockDetails['isProfit'],
           'percentage': stockDetails['percentage'],
           'closePrice': stockDetails['closePrice'],
+          'date': stockDetails['date'],
         },
       ),
     );
@@ -172,6 +174,35 @@ class Investments with ChangeNotifier {
     );
 
     notifyListeners();
+  }
+
+  // function to update the stock details stored on firebase
+  Future<void> updateStockDetails(
+      String stockId, String symbol, String name) async {
+    // url to update the specific stock stored on firebase using REST API
+    final url = Uri.parse(
+        'https://expensify-8324b-default-rtdb.firebaseio.com/userStocks/$userId/$stockId.json?auth=$token');
+
+    // temp var for storing new updated details
+    var stockDetails;
+
+    // storing the updated stock details
+    await getStockDetails(symbol).then((value) => stockDetails = value);
+
+    // patch or update request to udpate the stock details on firebase with new details of the stock
+    await http.patch(
+      url,
+      body: json.encode(
+        {
+          'name': name,
+          'symbol': symbol,
+          'isProfit': stockDetails['isProfit'],
+          'percentage': stockDetails['percentage'],
+          'closePrice': stockDetails['closePrice'],
+          'date': stockDetails['date'],
+        },
+      ),
+    );
   }
 
   // future method to fetch and set the user stocks from firebase
@@ -201,24 +232,63 @@ class Investments with ChangeNotifier {
     // init a list of investment items to store the extracted stocks
     final List<InvestmentItem> loadedUserStocks = [];
 
+    // string value of todays date
+    final todaysTimeStamp = DateTime.now().toString().split(" ")[0];
+
+    // DateTime object of todays date using the string value
+    final todaysDate = DateFormat('yyyy-M-d').parse(todaysTimeStamp);
+
+    // new date for checking for updates
+    var newDate =
+        DateTime(todaysDate.year, todaysDate.month, todaysDate.day - 2);
+
+    // var to check if update is done or not
+    var isUpdate = false;
+
     // looping over each stock which was returned from firebase
     extractedUserStocks.forEach((userStockId, userStock) {
-      // adding each stock in list as an Investment item object
-      loadedUserStocks.add(
-        InvestmentItem(
-          id: userStockId,
-          stockLabel: userStock['symbol'],
-          stockName: userStock['name'],
-          stockExchange: 'BSE',
-          isProfit: userStock['isProfit'],
-          percentage: userStock['percentage'],
-          closePrice: userStock['closePrice'],
-        ),
-      );
+      // getting the stored stock date
+      var storedStockDate = DateFormat('yyyy-M-d').parse(userStock['date']);
+
+      // condition for update of stocks
+      if (storedStockDate == newDate &&
+          (todaysDate.weekday != 6 || todaysDate.weekday != 7)) {
+        // update the stocks details and update is set to true
+        isUpdate = true;
+        print('In update');
+        // calling the update function
+        updateStockDetails(
+          userStockId,
+          userStock['symbol'],
+          userStock['name'],
+        );
+      }
+      // if no update then simply add in the list
+      else {
+        print('Not update');
+        // adding each stock in list as an Investment item object
+        loadedUserStocks.add(
+          InvestmentItem(
+            id: userStockId,
+            stockLabel: userStock['symbol'],
+            stockName: userStock['name'],
+            stockExchange: 'BSE',
+            isProfit: userStock['isProfit'],
+            percentage: userStock['percentage'],
+            closePrice: userStock['closePrice'],
+          ),
+        );
+      }
     });
 
-    // setting it to user investments list and notifying the listners
-    _userInvestments = loadedUserStocks;
+    // in case of no upadtes then simply show the data on users screen else fetch and
+    // set the data once again for new values
+    if (!isUpdate) {
+      // setting it to user investments list and notifying the listners
+      _userInvestments = loadedUserStocks;
+    } else {
+      fetchAndSetUserStocks();
+    }
     notifyListeners();
   }
 
