@@ -29,6 +29,7 @@ class UserStockItem extends StatelessWidget {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // displaying the stock label and which exchnage
                 Text(
                   '${stock.stockLabel} | ${stock.stockExchange}',
                   style: const TextStyle(
@@ -40,6 +41,7 @@ class UserStockItem extends StatelessWidget {
                 const SizedBox(
                   height: 5,
                 ),
+                // displaying the stock name
                 Text(
                   stock.stockName,
                   style: const TextStyle(
@@ -55,6 +57,7 @@ class UserStockItem extends StatelessWidget {
                 const SizedBox(
                   height: 5,
                 ),
+                // displaying the close price of the stock
                 Text(
                   '₹${stock.closePrice}',
                   style: const TextStyle(
@@ -66,7 +69,9 @@ class UserStockItem extends StatelessWidget {
                 Container(
                   height: 25,
                   width: 55,
-                  child: Text(
+                  child:
+                      // displaying the stock percentage for that day
+                      Text(
                     '${stock.percentage.toStringAsFixed(2)}%',
                     style: const TextStyle(
                       color: Colors.white,
@@ -75,7 +80,9 @@ class UserStockItem extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
-                    color: stock.isProfit ? Colors.green : Colors.red,
+                    color:
+                        // if profit or loss then show green or red color resp
+                        stock.isProfit ? Colors.green : Colors.red,
                   ),
                 )
               ],

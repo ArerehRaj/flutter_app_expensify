@@ -78,6 +78,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                       ? Expanded(
                           child: ListView.builder(
                           itemBuilder: (ctx, index) {
+                            // passing the investment item object in constructor
                             return UserStockItem(
                               // symbol: userStocks[index].stockLabel,
                               // name: userStocks[index].stockName,

@@ -77,51 +77,74 @@ class Investments with ChangeNotifier {
     notifyListeners();
   }
 
+  // method to get the details of stock like prices, profit or loss and percentage
   Future<Map> getStockDetails(String symbol) async {
+    // url string to API for that stock
     final String urlString =
         'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=$symbol&apikey=NDESB25P2USI9V9L';
     final url = Uri.parse(urlString);
+    // get request to API
     final response = await http.get(url);
 
+    // Extracting the stock data as a Map
     final extractedStockData =
         json.decode(response.body) as Map<String, dynamic>;
 
+    // fetching only the date and time related details of the stock
     final stockData =
         extractedStockData['Time Series (Daily)'] as Map<String, dynamic>;
     // final todaysTimeStamp = DateTime.now().toString().split(" ")[0];
 
+    // temp map to store the data
     var data = {};
 
+    // fetching the first key of the map i.e. the latest date and data of that stock
     final key = stockData.keys.toList().first;
 
+    // fetching the close and open price of the stock
     final closePrice = double.parse(stockData[key]['4. close']);
     final openPrice = double.parse(stockData[key]['1. open']);
 
+    // calculating that day's price
     final daysPrice = closePrice - openPrice;
+
+    // setting a bool value for profit or not
     bool isProfit = true;
+
+    // if day's price is negative then set profit to false
     if (daysPrice < 0) {
       isProfit = false;
     }
+
+    // calculating the percentage and storing the data in the map
     final percentage = (daysPrice / openPrice) * 100;
     data['isProfit'] = isProfit;
     data['percentage'] = percentage;
     data['closePrice'] = closePrice;
 
+    // if loss then set the negative value of percentage as positive
     if (!isProfit) {
       data['percentage'] = -data['percentage'];
     }
 
+    // return the map
     return data;
   }
 
+  // method to add a user stock in firebase
   Future<void> addStockInUserList(String label, String name) async {
+    // url string to API for storing the stock details of that user on firebase
     final String urlString =
         'https://expensify-8324b-default-rtdb.firebaseio.com/userStocks/$userId.json?auth=$token';
     final url = Uri.parse(urlString);
 
+    // temp variable to store stock details
     var stockDetails;
+
+    // fetching and storing the stock details
     await getStockDetails(label).then((value) => stockDetails = value);
 
+    // sending the post request with the stock details
     final response = await http.post(
       url,
       body: json.encode(
@@ -135,6 +158,7 @@ class Investments with ChangeNotifier {
       ),
     );
 
+    // adding in the user investments list and updating the UI of user by notify listners
     _userInvestments.add(
       InvestmentItem(
         id: json.decode(response.body)['name'],
