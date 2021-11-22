@@ -132,7 +132,10 @@ class Investments with ChangeNotifier {
     return data;
   }
 
+  // bool function to check if the stock already exists in the user list or not
   bool checkIfStockPresent(String label) {
+    // if error throws up then it means the stock is not present in list
+    // else present
     try {
       var stock = _userInvestments
           .singleWhere((stockObject) => stockObject.stockLabel == label);
@@ -259,7 +262,7 @@ class Investments with ChangeNotifier {
         DateTime(todaysDate.year, todaysDate.month, todaysDate.day - 2);
 
     var new_date =
-        DateTime(todaysDate.year, todaysDate.month, todaysDate.day - 1);
+        DateTime(todaysDate.year, todaysDate.month, todaysDate.day - 4);
 
     // var to check if update is done or not
     var isUpdate = false;
