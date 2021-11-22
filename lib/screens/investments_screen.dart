@@ -212,14 +212,18 @@ class SearchedStockCard extends StatelessWidget {
         builder: (ctx) => AlertDialog(
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
-              Text('Are you sure?'),
+            children: [
+              stockName == 'Already_exists'
+                  ? const Text('Already exists!')
+                  : const Text('Are you sure?'),
             ],
           ),
-          content: Text(
-            'You wanna add $stockName',
-            textAlign: TextAlign.center,
-          ),
+          content: stockName == 'Already_exists'
+              ? const Text('This already exists in your list!')
+              : Text(
+                  'You wanna add $stockName',
+                  textAlign: TextAlign.center,
+                ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -227,18 +231,27 @@ class SearchedStockCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                getResponseButton(
-                  'Yes',
-                  ctx,
-                  investmentsData.getUrlStocks[index]['symbol'],
-                  investmentsData.getUrlStocks[index]['name'],
-                ),
-                getResponseButton(
-                  'No',
-                  ctx,
-                  investmentsData.getUrlStocks[index]['symbol'],
-                  investmentsData.getUrlStocks[index]['name'],
-                ),
+                if (stockName != 'Already_exists')
+                  getResponseButton(
+                    'Yes',
+                    ctx,
+                    investmentsData.getUrlStocks[index]['symbol'],
+                    investmentsData.getUrlStocks[index]['name'],
+                  ),
+                if (stockName != 'Already_exists')
+                  getResponseButton(
+                    'No',
+                    ctx,
+                    investmentsData.getUrlStocks[index]['symbol'],
+                    investmentsData.getUrlStocks[index]['name'],
+                  ),
+                if (stockName == 'Already_exists')
+                  getResponseButton(
+                    'Okay',
+                    ctx,
+                    investmentsData.getUrlStocks[index]['symbol'],
+                    investmentsData.getUrlStocks[index]['name'],
+                  ),
               ],
             ),
           ],
@@ -265,7 +278,12 @@ class SearchedStockCard extends StatelessWidget {
             color: Colors.green,
           ),
           onPressed: () {
-            showAlertBox(investmentsData.getUrlStocks[index]['name']);
+            if (investmentsData.checkIfStockPresent(
+                investmentsData.getUrlStocks[index]['symbol'])) {
+              showAlertBox('Already_exists');
+            } else {
+              showAlertBox(investmentsData.getUrlStocks[index]['name']);
+            }
           },
         ),
       ),

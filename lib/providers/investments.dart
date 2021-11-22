@@ -132,6 +132,22 @@ class Investments with ChangeNotifier {
     return data;
   }
 
+  bool checkIfStockPresent(String label) {
+    try {
+      var stock = _userInvestments
+          .singleWhere((stockObject) => stockObject.stockLabel == label);
+      if (stock != null) {
+        print('present');
+        return true;
+      }
+      print('not present');
+      return false;
+    } catch (error) {
+      print('not present');
+      return false;
+    }
+  }
+
   // method to add a user stock in firebase
   Future<void> addStockInUserList(String label, String name) async {
     // url string to API for storing the stock details of that user on firebase
@@ -242,6 +258,9 @@ class Investments with ChangeNotifier {
     var newDate =
         DateTime(todaysDate.year, todaysDate.month, todaysDate.day - 2);
 
+    var new_date =
+        DateTime(todaysDate.year, todaysDate.month, todaysDate.day - 1);
+
     // var to check if update is done or not
     var isUpdate = false;
 
@@ -249,9 +268,8 @@ class Investments with ChangeNotifier {
     extractedUserStocks.forEach((userStockId, userStock) {
       // getting the stored stock date
       var storedStockDate = DateFormat('yyyy-M-d').parse(userStock['date']);
-
       // condition for update of stocks
-      if (storedStockDate == newDate &&
+      if ((storedStockDate == newDate || storedStockDate == new_date) &&
           (todaysDate.weekday != 6 || todaysDate.weekday != 7)) {
         // update the stocks details and update is set to true
         isUpdate = true;
